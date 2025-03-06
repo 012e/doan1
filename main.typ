@@ -8,6 +8,7 @@
 #codly(languages: codly-languages)
 
 #let uit-color = rgb("#4a63b8")
+#let version = read("version.txt")
 
 #page(margin: 1cm)[
   #rect(width: 100%, height: 100%, stroke: 3pt + uit-color)[
@@ -16,7 +17,7 @@
         #text(size: 17pt)[*ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH*] \
         #text[*TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN*] \
         #text[*KHOA CÔNG NGHỆ PHẦN MỀM*] \ 
-        #text(fill: white, size: 20pt)[SECRET: version 1.0]
+        #text(fill: white, size: 20pt)[SECRET: version #version]
         #v(90pt)
         #image("images/logo-uit.svg", width: 200pt)
       ]
