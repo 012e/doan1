@@ -7,8 +7,8 @@
 #show: codly-init.with()
 #codly(languages: codly-languages)
 
-#let uit-color = rgb("#4a63b8")
 #let version = read("version.txt")
+#let uit-color = rgb("#4a63b8")
 
 #page(margin: 1cm)[
   #rect(width: 100%, height: 100%, stroke: 3pt + uit-color)[
