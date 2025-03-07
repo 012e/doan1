@@ -53,7 +53,14 @@
 
 
 #pagebreak()
-#set page(numbering: "1")
+
+#show outline.entry.where(level: 1): it => {
+  set text(size: 14pt, weight: "bold")
+  set block(above: 1em)
+  [#link(it.element.location())[Chương #it.prefix() #it.inner()]
+  ]
+}
+
 #outline(
   title: [
     #text([Mục lục], size: 30pt)
@@ -62,6 +69,7 @@
   depth: 4
 )
 #pagebreak()
+#set page(numbering: "1")
 
 #show heading.where(level: 1): it => {
   [Chương #counter(heading).at(here()).at(0). ] + it.body
@@ -250,148 +258,230 @@ Tính nhất quán là thuộc tính của hệ thống đảm bảo rằng tấ
 
 Trong thực tế, do không thể tránh khỏi phân vùng mạng trong hệ thống phân tán, hầu hết các hệ thống phải đánh đổi giữa tính nhất quán và tính khả dụng.
 
-=== Khả Năng Chống Chịu Lỗi (Fault Tolerance)
+== Tính Chịu Lỗi (Fault Tolerance)
+<tính-chịu-lỗi-fault-tolerance>
+=== Các khái niệm về tính chịu lỗi
+<các-khái-niệm-về-tính-chịu-lỗi>
+==== Định nghĩa
+<định-nghĩa>
+Tính chịu lỗi là khả năng của hệ thống để duy trì hoạt động liên tục và
+cung cấp dịch vụ một cách đáng tin cậy ngay cả khi một hoặc nhiều thành
+phần của hệ thống gặp sự cố. Đây là một thuộc tính quan trọng trong
+thiết kế hệ thống, đặc biệt là các hệ thống quan trọng mà thời gian
+ngừng hoạt động có thể gây ra hậu quả nghiêm trọng.
 
-Khả năng chống chịu lỗi là khả năng hệ thống tiếp tục hoạt động đúng ngay cả khi một hoặc nhiều thành phần bị lỗi. Đây là thuộc tính quan trọng của hệ thống phân tán đáng tin cậy.
+==== Mục tiêu của tính chịu lỗi
+<mục-tiêu-của-tính-chịu-lỗi>
+- #strong[Tính khả dụng cao (High Availability)];: Đảm bảo hệ thống luôn
+  sẵn sàng đáp ứng yêu cầu dịch vụ.
+- #strong[Tính liên tục (Continuity)];: Duy trì hoạt động không gián
+  đoạn khi có sự cố xảy ra.
+- #strong[Độ tin cậy (Reliability)];: Đảm bảo hệ thống hoạt động đúng
+  chức năng trong mọi điều kiện.
+- #strong[Tính toàn vẹn dữ liệu (Data Integrity)];: Bảo vệ dữ liệu khỏi
+  bị hỏng hoặc mất mát.
 
-===== Các Loại Lỗi
+==== Các loại lỗi
+<các-loại-lỗi>
++ #strong[Lỗi phần cứng (Hardware Faults)];:
 
-+ *Lỗi Sự Cố (Crash Failures)*
-  - Nút đột ngột ngừng hoạt động hoặc khởi động lại
-  - Dễ phát hiện và xử lý nhất
-  - Giải pháp: Dự phòng, tự động khởi động lại
+  - Hỏng ổ cứng, RAM, CPU
+  - Mất điện
+  - Lỗi mạng và kết nối
 
-+ *Lỗi Thời Gian (Timing Failures)*
-  - Nút phản hồi quá chậm hoặc quá nhanh
-  - Có thể do mạng không ổn định hoặc quá tải
-  - Giải pháp: Cơ chế timeout, thử lại
++ #strong[Lỗi phần mềm (Software Faults)];:
 
-+ *Lỗi Phản Hồi (Response Failures)*
-  - Nút trả về giá trị không chính xác
-  - Có thể do bug phần mềm hoặc dữ liệu hỏng
-  - Giải pháp: Kiểm tra tính hợp lệ, mã hóa lỗi
+  - Lỗi lập trình
+  - Lỗi hệ điều hành
+  - Xung đột tài nguyên
+  - Rò rỉ bộ nhớ
 
-+ *Lỗi Byzantine (Byzantine Failures)*
-  - Nút hoạt động không thể dự đoán, có thể độc hại
-  - Loại lỗi phức tạp nhất để xử lý
-  - Được thảo luận chi tiết ở phần sau
++ #strong[Lỗi hoạt động (Operational Faults)];:
 
-===== Cơ Chế Chống Chịu Lỗi
+  - Lỗi cấu hình
+  - Lỗi do con người
+  - Quá tải hệ thống
 
-+ *Dự Phòng (Redundancy)*
-  - Dự phòng thông tin: Mã sửa lỗi, kiểm tra tổng
-  - Dự phòng thời gian: Thử lại, thời gian chờ thích ứng
-  - Dự phòng vật lý: Nhiều bản sao phần cứng
++ #strong[Lỗi thiết kế (Design Faults)];:
 
-+ *Sao Chép (Replication)*
-  - Duy trì nhiều bản sao dữ liệu trên các nút khác nhau
-  - Có thể là sao chép đồng bộ hoặc bất đồng bộ
-  - Phương pháp: Primary-Secondary, Multi-Primary, Quorum
+  - Lỗi trong kiến trúc hệ thống
+  - Thiếu tính năng đảm bảo an toàn
+  - Thiết kế không tối ưu
 
-+ *Phát Hiện Lỗi (Failure Detection)*
-  - Cơ chế heartbeat: Kiểm tra định kỳ tình trạng nút
-  - Hệ thống giám sát phân tán
-  - Đánh giá tình trạng dựa trên nhiều nguồn
+=== Các kỹ thuật đảm bảo tính chịu lỗi
+<các-kỹ-thuật-đảm-bảo-tính-chịu-lỗi>
+==== Dự phòng (Redundancy)
+<dự-phòng-redundancy>
+Dự phòng là kỹ thuật cơ bản nhất để đạt được tính chịu lỗi. Nó bao gồm:
 
-+ *Khôi Phục Lỗi (Failure Recovery)*
-  - Khôi phục trạng thái từ snapshot hoặc log
-  - Tự động khởi động lại dịch vụ
-  - Failover tự động sang nút dự phòng
++ #strong[Dự phòng phần cứng (Hardware Redundancy)];:
 
-===== Kỹ Thuật Thiết Kế Chống Chịu Lỗi
+  - #strong[Dự phòng thụ động (Passive Redundancy)];: Sử dụng nhiều
+    thành phần dự phòng, trong đó một thành phần hoạt động chính và các
+    thành phần khác ở chế độ chờ.
+  - #strong[Dự phòng chủ động (Active Redundancy)];: Tất cả các thành
+    phần đều hoạt động đồng thời và xử lý công việc.
+  - #strong[Dự phòng N+1, N+2];: Có N thành phần cần thiết và thêm 1
+    hoặc 2 thành phần dự phòng.
+  - #strong[Dự phòng 2N];: Nhân đôi toàn bộ hệ thống.
 
-+ *Phân Vùng Lỗi (Failure Domains)*
-  - Cô lập các thành phần để lỗi không lan truyền
-  - Sử dụng nhiều vùng hoặc khu vực
++ #strong[Dự phòng thông tin (Information Redundancy)];:
 
-+ *Circuit Breaker Pattern*
-  - Ngăn chặn gọi đến dịch vụ đã biết là bị lỗi
-  - Cho phép hệ thống tự phục hồi
-  - Ngăn chặn lỗi dây chuyền
+  - #strong[Mã kiểm tra lỗi (Error Detection Codes)];: Sử dụng CRC,
+    checksum
+  - #strong[Mã sửa lỗi (Error Correction Codes)];: Sử dụng Reed-Solomon,
+    Hamming
+  - #strong[RAID (Redundant Array of Independent Disks)];: Các cấu hình
+    RAID khác nhau cung cấp mức độ dự phòng dữ liệu khác nhau
 
-+ *Bulkhead Pattern*
-  - Cô lập tài nguyên cho các người dùng hoặc dịch vụ khác nhau
-  - Đảm bảo lỗi không ảnh hưởng đến toàn bộ hệ thống
++ #strong[Dự phòng thời gian (Time Redundancy)];:
 
-+ *Timeout và Retry Strategies*
-  - Thiết lập thời gian chờ hợp lý
-  - Chiến lược thử lại với backoff
-  - Tránh thundering herd problem
+  - Thực hiện lại các tác vụ bị lỗi
+  - Kiểm tra lại kết quả để xác nhận
 
-==== Lỗi Byzantine (Byzantine Fault)
++ #strong[Dự phòng phần mềm (Software Redundancy)];:
 
-Lỗi Byzantine (Byzantine fault), hay còn gọi là Vấn đề các vị tướng Byzantine, là một tình trạng của một hệ thống, đặc biệt là hệ thống phân tán, trong đó các thành phần có thể bị lỗi và không có thông tin chính xác về việc liệu thành phần đó có bị lỗi hay không.  Thuật ngữ này lấy tên từ một câu chuyện ngụ ngôn, "Vấn đề các vị tướng Byzantine", được phát triển để mô tả một tình huống trong đó, để tránh sự sụp đổ của hệ thống, các tác nhân của hệ thống phải đồng ý về một chiến lược phối hợp, nhưng một số tác nhân này là không đáng tin cậy.
+  - #strong[N-version Programming];: Phát triển nhiều phiên bản độc lập
+    của cùng một phần mềm
+  - #strong[Recovery Blocks];: Sử dụng các phương pháp giải quyết vấn đề
+    khác nhau
+  - #strong[Design Diversity];: Thiết kế các giải pháp đa dạng
 
-===== Bài Toán Các Tướng Byzantine
+==== Phân vùng và cô lập lỗi (Fault Isolation)
+<phân-vùng-và-cô-lập-lỗi-fault-isolation>
++ #strong[Módun hóa (Modularization)];:
 
-Bài toán mô tả tình huống:
-- Một số tướng Byzantine bao vây một thành phố
-- Tướng lĩnh cần đồng thuận về kế hoạch tấn công hoặc rút lui
-- Liên lạc chỉ thông qua tin nhắn
-- Một số tướng có thể là kẻ phản bội, gửi thông tin sai lệch
+  - Chia hệ thống thành các thành phần độc lập
+  - Giới hạn ảnh hưởng của lỗi trong một phạm vi nhỏ
 
-Thách thức là làm thế nào để các tướng trung thành đạt được đồng thuận ngay cả khi có sự hiện diện của kẻ phản bội.
++ #strong[Sandboxing];:
 
-===== Đặc Điểm của Lỗi Byzantine
+  - Thực thi mã trong môi trường cô lập
+  - Ngăn chặn lỗi lan truyền sang các phần khác của hệ thống
 
-+ *Không Giới Hạn Hành Vi*
-  - Có thể gửi thông điệp mâu thuẫn đến các nút khác nhau
-  - Có thể cố tình trì hoãn hoặc sửa đổi thông điệp
-  - Có thể phối hợp với các nút độc hại khác
++ #strong[Microservices];:
 
-+ *Khó Phát Hiện*
-  - Không thể dễ dàng phân biệt nút Byzantine với nút bình thường
-  - Có thể hoạt động bình thường trong một thời gian trước khi gây ra lỗi
-  - Có thể thay đổi hành vi để tránh phát hiện
+  - Phân tách ứng dụng thành các dịch vụ nhỏ, độc lập
+  - Mỗi dịch vụ có thể thất bại mà không ảnh hưởng đến toàn bộ hệ thống
 
-+ *Tác Động Nghiêm Trọng*
-  - Có thể phá vỡ tính nhất quán của toàn bộ hệ thống
-  - Có thể dẫn đến hành vi không xác định
-  - Đặc biệt nguy hiểm trong các hệ thống tài chính, quân sự, y tế
+==== Phát hiện và khôi phục lỗi (Fault Detection and Recovery)
+<phát-hiện-và-khôi-phục-lỗi-fault-detection-and-recovery>
++ #strong[Kỹ thuật phát hiện lỗi];:
 
-===== Giao Thức Đồng Thuận Byzantine
+  - #strong[Heartbeat/Watchdog];: Giám sát hoạt động liên tục của hệ
+    thống
+  - #strong[Health checks];: Kiểm tra định kỳ trạng thái của các thành
+    phần
+  - #strong[Log monitoring];: Phân tích nhật ký để phát hiện dấu hiệu
+    lỗi
+  - #strong[Circuit breakers];: Phát hiện và ngăn chặn lỗi lan truyền
 
-+ *PBFT (Practical Byzantine Fault Tolerance)*
-  - Được phát triển bởi Miguel Castro và Barbara Liskov (1999)
-  - Có thể chịu đựng đến f nút Byzantine trong hệ thống có 3f+1 nút
-  - Sử dụng quy trình 3 giai đoạn: pre-prepare, prepare, commit
-  - Hiệu quả hơn các giải pháp trước đó, nhưng vẫn có chi phí giao tiếp cao
++ #strong[Kỹ thuật khôi phục lỗi];:
 
-+ *Tendermint*
-  - Biến thể của PBFT được sử dụng trong blockchain
-  - Sử dụng cơ chế đặt cược (staking) làm cơ chế khuyến khích
-  - Cung cấp tính chất giao dịch chung cuộc (finality)
+  - #strong[Restart/Reboot];: Khởi động lại thành phần bị lỗi
+  - #strong[Rollback];: Quay trở lại trạng thái ổn định trước đó
+  - #strong[Failover];: Chuyển đổi sang hệ thống dự phòng
+  - #strong[Self-healing];: Hệ thống tự động phát hiện và sửa chữa lỗi
 
-+ *HoneyBadgerBFT*
-  - Giao thức đồng thuận không đồng bộ
-  - Không phụ thuộc vào giả định thời gian
-  - Phù hợp cho môi trường Internet với độ trễ không đoán trước
+==== Quản lý trạng thái (State Management)
+<quản-lý-trạng-thái-state-management>
++ #strong[Checkpointing];:
 
-+ *Proof of Work (PoW)*
-  - Sử dụng trong Bitcoin và nhiều blockchain khác
-  - Dựa trên công việc tính toán thay vì giao tiếp
-  - Cung cấp khả năng chống chịu Byzantine trong môi trường mở
+  - Lưu trữ trạng thái hệ thống tại các điểm cố định
+  - Cho phép khôi phục từ điểm checkpoint gần nhất
 
-===== Ứng Dụng của Khả Năng Chịu Lỗi Byzantine
++ #strong[Transaction Processing];:
 
-+ *Blockchain và Cryptocurrency*
-  - Bitcoin, Ethereum và các dự án blockchain khác
-  - Môi trường phi tập trung với các tác nhân không đáng tin cậy
-  - Kinh tế học token như cơ chế khuyến khích
+  - Đảm bảo tính toàn vẹn của giao dịch (ACID)
+  - Hỗ trợ rollback nếu có lỗi
 
-+ *Hệ Thống Quan Trọng*
-  - Hệ thống kiểm soát không lưu
-  - Hệ thống tài chính phân tán
++ #strong[Replication];:
+
+  - Sao chép dữ liệu qua nhiều nút
+  - Đồng bộ hóa trạng thái giữa các nút
+
+=== Byzantine Fault Tolerance (BFT)
+<byzantine-fault-tolerance-bft>
+==== Định nghĩa và bối cảnh
+<định-nghĩa-và-bối-cảnh>
+Byzantine Fault Tolerance (BFT) là khả năng của hệ thống phân tán để đạt
+được sự đồng thuận ngay cả khi một số nút trong hệ thống hoạt động sai
+lệch hoặc có hành vi độc hại. Khái niệm này bắt nguồn từ \"Bài toán các
+vị tướng Byzantine\" được mô tả bởi Leslie Lamport vào năm 1982.
+
+==== Bài toán các vị tướng Byzantine
+<bài-toán-các-vị-tướng-byzantine>
+- Một nhóm các vị tướng Byzantine bao vây một thành phố và cần quyết
+  định tấn công hay rút lui
+- Một số vị tướng có thể là kẻ phản bội, gửi thông tin sai lệch
+- Các vị tướng trung thành phải đạt được sự đồng thuận mặc dù có kẻ phản
+  bội
+
+==== Đặc điểm của Byzantine Fault
+<đặc-điểm-của-byzantine-fault>
+- #strong[Lỗi tùy ý (Arbitrary Failures)];: Các nút có thể hoạt động sai
+  theo bất kỳ cách nào
+- #strong[Hành vi độc hại (Malicious Behavior)];: Các nút có thể cố tình
+  phá hoại hệ thống
+- #strong[Phức tạp hơn các lỗi crash-stop];: Trong crash-stop, các nút
+  chỉ đơn giản là dừng hoạt động
+
+==== Các thuật toán BFT
+<các-thuật-toán-bft>
++ #strong[Practical Byzantine Fault Tolerance (PBFT)];:
+
+  - Được đề xuất bởi Castro và Liskov năm 1999
+  - Hoạt động trong 3 giai đoạn: pre-prepare, prepare, và commit
+  - Yêu cầu 3f+1 nút để chịu được f nút lỗi
+  - Được sử dụng trong nhiều hệ thống thực tế
+
++ #strong[Tendermint];:
+
+  - Thuật toán BFT dựa trên đồng thuận
+  - Được sử dụng trong nhiều blockchain
+  - Cung cấp cơ chế đồng thuận nhanh và an toàn
+
++ #strong[HoneyBadgerBFT];:
+
+  - Thuật toán BFT bất đồng bộ
+  - Hiệu quả trong môi trường mạng không ổn định
+  - Tối ưu hóa cho hiệu suất trong mạng rộng
+
++ #strong[Federated Byzantine Agreement (FBA)];:
+
+  - Sử dụng trong Stellar blockchain
+  - Mỗi nút chọn một tập hợp các nút đáng tin cậy (quorum slices)
+  - Cung cấp sự linh hoạt hơn so với các mô hình BFT truyền thống
+
+==== Ứng dụng của BFT
+<ứng-dụng-của-bft>
++ #strong[Blockchain và Cryptocurrency];:
+
+  - Bitcoin sử dụng Proof of Work để đạt được đồng thuận
+  - Ethereum 2.0 sử dụng thuật toán BFT Casper
+  - Các blockchain như Tendermint, Algorand, và Stellar sử dụng các biến
+    thể của BFT
+
++ #strong[Hệ thống phân tán quan trọng];:
+
+  - Hệ thống tài chính
+  - Hệ thống điều khiển hàng không
   - Hệ thống quân sự và an ninh quốc gia
 
-+ *Điện Toán Đám Mây Đa Nhà Cung Cấp*
-  - Đảm bảo dữ liệu nhất quán giữa các nhà cung cấp cloud
-  - Bảo vệ chống lại các nhà cung cấp độc hại tiềm ẩn
++ #strong[Điện toán đám mây và microservices];:
 
-+ *Internet of Things (IoT)*
-  - Bảo vệ hệ thống IoT khỏi thiết bị bị xâm nhập
-  - Đảm bảo tính toàn vẹn dữ liệu từ các cảm biến
-  - Hỗ trợ hệ thống tự động phân tán
+  - Đảm bảo tính nhất quán trong các hệ thống phân tán
+  - Bảo vệ chống lại các cuộc tấn công mạng
+
+==== Hạn chế của BFT
+<hạn-chế-của-bft>
+- #strong[Hiệu suất];: Các thuật toán BFT thường yêu cầu nhiều vòng giao
+  tiếp
+- #strong[Khả năng mở rộng];: Khó khăn trong việc mở rộng đến hàng nghìn
+  nút
+- #strong[Phức tạp];: Khó triển khai và gỡ lỗi
+- #strong[Chi phí tài nguyên];: Tiêu tốn nhiều tài nguyên tính toán và
+  mạng
 
 = Load Balancer
 
