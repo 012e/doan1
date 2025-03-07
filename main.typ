@@ -34,7 +34,7 @@
         #v(10pt)
 
         #text[Sinh viên thực hiện] \
-        #text[*Phạm Nhật Huy - 23520643*] \
+        #text[*Phạm Nhật Huy #sym.dash.en 23520643*] \
       ]
       #align(bottom + center)[
         #text(size: 13pt)[
