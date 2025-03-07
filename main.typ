@@ -506,9 +506,14 @@ một máy chủ gặp sự cố hoặc quá tải, load balancer sẽ tự đ�
 hướng lưu lượng đến các máy chủ khác đang hoạt động bình thường, đảm bảo
 dịch vụ luôn sẵn sàng và người dùng không gặp gián đoạn.
 
+#image("images/2025-03-07-21-50-59.png")
+
+
 == Phân loại
 
 === Hardware & Software
+
+#image("images/2025-03-07-21-49-37.png")
 
 ==== Hardware Load Balancer
 
@@ -560,6 +565,8 @@ Các giải pháp phổ biến: NGINX, HAProxy, AWS ELB, Traefik, Envoy.
 Load balancer tầng 4 hoạt động ở tầng vận chuyển của mô hình OSI, phân
 phối lưu lượng dựa trên thông tin IP và cổng TCP/UDP.
 
+#image("images/2025-03-07-21-53-42.png")
+
 #strong[Đặc điểm:]
 
 - Phân phối gói tin dựa trên địa chỉ IP nguồn/đích và cổng
@@ -571,6 +578,8 @@ phối lưu lượng dựa trên thông tin IP và cổng TCP/UDP.
 
 Load balancer tầng 7 hoạt động ở tầng ứng dụng, có khả năng phân tích và
 ra quyết định dựa trên nội dung gói tin HTTP/HTTPS.
+
+#image("images/2025-03-07-21-56-12.png")
 
 #strong[Đặc điểm:]
 
@@ -618,6 +627,7 @@ hoạt động:
 
 + *Server-side load balancing*: Server-side load balancing được thực hiện bởi một thiết bị hoặc ứng dụng được đặt trước các máy chủ backend. Load balancer sẽ nhận các yêu cầu từ client và sử dụng một thuật toán để chọn một máy chủ backend để xử lý yêu cầu. Sau đó, load balancer sẽ chuyển tiếp yêu cầu đến máy chủ backend được chọn và trả về kết quả cho client.
 + *Client-side load balancing*: Client-side load balancing được thực hiện bởi client. Client sẽ nhận thông tin về các máy chủ backend từ một dịch vụ danh mục (registry service) và sử dụng một thuật toán để chọn một máy chủ backend để gửi yêu cầu. Sau đó, client sẽ gửi yêu cầu trực tiếp đến máy chủ backend được chọn và nhận kết quả trả về.
+#image("images/2025-03-07-21-56-52.png")
 
 == Tăng availability của hệ thống
 
@@ -1044,6 +1054,8 @@ cache hiệu quả.
 <cache-aside>
 Cache-aside (hay còn gọi là Lazy Loading) là một pattern trong đó ứng
 dụng chịu trách nhiệm tương tác với cả cache và nguồn dữ liệu.
+
+#image("images/2025-03-07-21-59-03.png")
 
 #strong[Cách hoạt động:]
 
