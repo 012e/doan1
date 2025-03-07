@@ -1579,55 +1579,1145 @@ triển phần mềm.
   - Không có kinh nghiệm với các mẫu thiết kế phân tán
   - Có thể dẫn đến triển khai sai và các vấn đề hiệu suất
 
-= Service discovery & API gateway
+= Service Discovery & API Gateway
+<service-discovery--api-gateway>
+== Phân loại Service Discovery
+<phân-loại-service-discovery>
+Service Discovery là quá trình xác định và định vị các dịch vụ
+(services) trong một môi trường phân tán. Có hai phương pháp tiếp cận
+chính:
 
-== Phân loại service discovery
+=== 1. Client-side Discovery
+<1-client-side-discovery>
+Trong mô hình này, client chịu trách nhiệm xác định vị trí của service.
+Client truy vấn một service registry, nhận thông tin về các instance
+đang chạy, sau đó sử dụng thuật toán cân bằng tải để chọn ra instance
+phù hợp.
+
+#strong[Ưu điểm:]
+
+- Client có kiểm soát tốt hơn về thuật toán cân bằng tải
+- Giảm lớp trung gian giúp giảm độ trễ
+- Client có thể thực hiện các quyết định thông minh dựa trên trạng thái
+  cục bộ
+
+#strong[Nhược điểm:]
+
+- Tăng độ phức tạp cho client
+- Client phải triển khai logic service discovery cho mỗi ngôn
+  ngữ/framework
+- Client phải xử lý các trường hợp khi service không khả dụng
+
+=== 2. Server-side Discovery
+<2-server-side-discovery>
+Trong mô hình này, client gửi yêu cầu đến một thành phần trung gian
+(load balancer hoặc router), thành phần này sẽ tìm kiếm service registry
+và chuyển tiếp yêu cầu đến instance thích hợp.
+
+#strong[Ưu điểm:]
+
+- Tách biệt logic discovery khỏi client
+- Client đơn giản hơn, không cần biết về cơ chế discovery
+- Dễ triển khai đồng nhất trong nhiều nền tảng
+
+#strong[Nhược điểm:]
+
+- Thêm thành phần có thể trở thành điểm lỗi
+- Có thể tăng độ trễ do thêm một lớp trung gian
+- Cần thiết lập và quản lý thêm thành phần
 
 == Phân loại hình thức register
+<phân-loại-hình-thức-register>
+Để các dịch vụ có thể được khám phá, chúng cần được đăng ký (register)
+vào một service registry. Có các hình thức đăng ký như sau:
 
-== Sử dụng service
+=== Self-registration
+<1-self-registration>
+Trong mô hình này, mỗi service instance tự chịu trách nhiệm đăng ký
+thông tin của mình vào service registry khi khởi động và hủy đăng ký khi
+tắt.
+
+- #strong[Ưu điểm:]
+  - Kiến trúc phi tập trung
+  - Service chủ động quản lý vòng đời của mình
+  - Không cần thành phần quản lý bên ngoài
+
+- #strong[Nhược điểm:]
+  - Tăng độ phức tạp của service
+  - Yêu cầu logic đăng ký phải được triển khai trong mỗi service
+  - Có thể gặp vấn đề khi service bị crash mà không thực hiện được việc
+    hủy đăng ký
+
+=== Third-party Registration
+<2-third-party-registration>
+Trong mô hình này, một thành phần riêng biệt gọi là service registrar
+theo dõi các service instance và cập nhật thông tin vào service
+registry.
+
+#strong[Ưu điểm:]
+
+- Đơn giản hóa các service, giúp chúng tập trung vào nhiệm vụ chính
+- Xử lý tốt các trường hợp service crash
+- Cung cấp cơ chế đăng ký nhất quán
+
+#strong[Nhược điểm:]
+
+- Thêm thành phần cần được triển khai và duy trì
+- Có thể trở thành điểm lỗi duy nhất
+- Có thể có độ trễ trong việc phát hiện thay đổi trạng thái của service
+
+=== Infrastructure-based Registration
+<3-infrastructure-based-registration>
+Nhiều nền tảng cloud và container orchestration (như Kubernetes) cung
+cấp cơ chế đăng ký tích hợp.
+
+#strong[Ưu điểm:]
+
+- Tích hợp sẵn với hạ tầng
+- Không cần code đặc biệt trong service
+- Kết hợp chặt chẽ với các cơ chế quản lý vòng đời
+
+#strong[Nhược điểm:]
+
+- Phụ thuộc vào nền tảng cụ thể
+- Có thể khó khăn khi chuyển đổi giữa các nền tảng
+- Khả năng tùy biến có thể bị hạn chế
+
+== Sử dụng Service
+<sử-dụng-service>
+Sau khi đã thiết lập Service Discovery, có nhiều cách để client sử dụng
+các service. Ba phương pháp chính là:
 
 === Direct
+<direct>
+Trong mô hình Direct, client giao tiếp trực tiếp với các service sau khi
+đã xác định vị trí của chúng thông qua Service Discovery.
+
+#strong[Quy trình:]
+
++ Client truy vấn service registry để tìm vị trí của service
++ Client kết nối trực tiếp đến service instance
++ Client xử lý các vấn đề về tính khả dụng, retry logic, và cân bằng tải
+
+#strong[Ưu điểm:]
+
+- Đơn giản về mặt kiến trúc
+- Giảm độ trễ do không có thành phần trung gian
+- Phù hợp cho các ứng dụng có yêu cầu hiệu suất cao
+
+#strong[Nhược điểm:]
+
+- Client phải xử lý nhiều chi tiết phức tạp
+- Khó đảm bảo tính nhất quán giữa các client khác nhau
+- Khó áp dụng các chính sách chung như bảo mật, giám sát
 
 === Composite UI
+<composite-ui>
+Mô hình Composite UI (hay còn gọi là API Composition) tập trung vào việc
+tổng hợp dữ liệu từ nhiều service để hiển thị trong giao diện người
+dùng.
 
-=== API gateway
+#strong[Quy trình:]
+
++ UI layer gọi đến nhiều service khác nhau
++ Tổng hợp kết quả từ các service
++ Chuyển đổi và hiển thị dữ liệu cho người dùng
+
+#strong[Ưu điểm:]
+
+- Giao diện người dùng thống nhất mặc dù dữ liệu từ nhiều service
+- Giảm số lượng yêu cầu từ client đến server
+- Có thể tối ưu hóa dữ liệu cho từng trường hợp sử dụng cụ thể
+
+#strong[Nhược điểm:]
+
+- Tăng độ phức tạp trong UI layer
+- Có thể gây ra vấn đề hiệu suất khi phải gọi nhiều service
+- Phức tạp trong việc xử lý lỗi khi một số service không khả dụng
+
+=== API Gateway
+<api-gateway>
+API Gateway đóng vai trò cổng vào duy nhất cho tất cả các yêu cầu từ
+client và sau đó chuyển tiếp đến các service thích hợp.
+
+#strong[Chức năng chính:]
+
+- Định tuyến yêu cầu đến service phù hợp
+- Tổng hợp dữ liệu từ nhiều service
+- Xử lý các vấn đề chéo như xác thực, cân bằng tải, giám sát
+
+#strong[Ưu điểm:]
+
+- Ẩn đi sự phức tạp của hệ thống microservices
+- Cung cấp API được tối ưu hóa cho các client khác nhau
+- Tập trung xử lý các vấn đề chéo, giúp service tập trung vào business
+  logic
+
+#strong[Nhược điểm:]
+
+- Có thể trở thành điểm nghẽn và điểm lỗi duy nhất
+- Thêm độ trễ do thêm một lớp trung gian
+- Cần được thiết kế cẩn thận để đảm bảo hiệu suất và khả năng mở rộng
 
 == Envoy
-
+<envoy>
 === Giới thiệu
+<giới-thiệu>
+Envoy là một proxy mã nguồn mở, được thiết kế đặc biệt cho các ứng dụng
+dạng cloud-native và microservices. Được phát triển ban đầu bởi Lyft và
+hiện là một dự án tốt nghiệp của Cloud Native Computing Foundation
+(CNCF).
+
+#strong[Đặc điểm nổi bật:]
+
+- Proxy Layer 7 (HTTP, gRPC, MongoDB, Redis...)
+- Tích hợp trực tiếp với Service Discovery
+- Cân bằng tải thông minh
+- Hỗ trợ các tính năng như circuit breaking, rate limiting, tracing
+- Cấu hình động thông qua API
+- Xây dựng trên C++ với hiệu suất cao
+
+Envoy thường được triển khai theo mô hình sidecar trong Service Mesh,
+hoặc như một Edge Proxy/API Gateway.
 
 === Kiến trúc
+<kiến-trúc>
+Kiến trúc của Envoy bao gồm các thành phần chính sau:
+
+==== Listeners
+<1-listeners>
+Listeners là các điểm đầu vào mạng (network sockets) mà Envoy lắng nghe.
+Mỗi listener có thể được cấu hình với các bộ lọc (filters) để xử lý
+traffic.
+
+#strong[Loại Listeners:]
+
+- #strong[TCP Listeners];: Xử lý kết nối TCP thuần túy
+- #strong[HTTP Listeners];: Xử lý traffic HTTP/1.x, HTTP/2, gRPC
+
+==== Filters
+<2-filters>
+Filters tạo nên pipeline xử lý yêu cầu trong Envoy. Có hai loại filters
+chính:
+
+- #strong[Network Filters];: Hoạt động ở lớp L3/L4 (TCP), xử lý raw
+  bytes và kết nối
+- #strong[HTTP Filters];: Hoạt động ở lớp L7, xử lý HTTP
+  request/response
+
+Các filters phổ biến bao gồm:
+
+- Router filter: Chuyển tiếp yêu cầu HTTP đến upstream cluster
+- Rate limit filter: Giới hạn số lượng request
+- JWT authentication filter: Xác thực JWT token
+- CORS filter: Xử lý Cross-Origin Resource Sharing
+
+==== Clusters
+<3-clusters>
+Clusters là nhóm các endpoints cung cấp cùng một service. Envoy sử dụng
+các thông tin về cluster để quyết định nơi định tuyến yêu cầu.
+
+#strong[Cấu hình Cluster bao gồm:]
+
+- Phương thức khám phá service (static, DNS, EDS)
+- Thuật toán cân bằng tải (round robin, least request, ring hash...)
+- Cấu hình health checking
+- Circuit breaking thresholds
+- Timeout và retry policies
+
+==== Endpoints
+<4-endpoints>
+Endpoints là các instance cụ thể trong một cluster. Một endpoint thường
+là một địa chỉ IP và port.
+
+==== Routes
+<5-routes>
+Routes định nghĩa cách Envoy khớp yêu cầu HTTP với cluster phù hợp.
+Routes có thể được cấu hình dựa trên:
+
+- Path prefix hoặc exact match
+- HTTP headers
+- Query parameters
+- HTTP method
+
+==== Dynamic Configuration
+<6-dynamic-configuration>
+Envoy hỗ trợ xAPI (xDS) - một tập các APIs để cấu hình động:
+
+- LDS (Listener Discovery Service)
+- RDS (Route Discovery Service)
+- CDS (Cluster Discovery Service)
+- EDS (Endpoint Discovery Service)
+- SDS (Secret Discovery Service)
+
+Điều này cho phép Envoy cập nhật cấu hình mà không cần khởi động lại.
+
+==== Observability
+<7-observability>
+Envoy cung cấp khả năng quan sát mạnh mẽ:
+
+- Thống kê chi tiết về traffic
+- Distributed tracing (OpenTracing, Zipkin, Jaeger)
+- Access logging
+- Admin interface cho giám sát và debug
 
 = Distributed transactions
-
+<distributed-transactions>
 == Tổng quan về transactions
+<tổng-quan-về-transactions>
+Một transaction (giao dịch) là một chuỗi các thao tác được xem như một
+đơn vị công việc đơn lẻ. Transactions được thiết kế để duy trì tính toàn
+vẹn dữ liệu bằng cách đảm bảo rằng các thao tác liên quan hoặc được thực
+hiện đầy đủ, hoặc không có thao tác nào được thực hiện.
+
+Các thuộc tính cơ bản của một transaction, thường được gọi là thuộc tính
+ACID, bao gồm:
+
+- #strong[Atomicity (Tính nguyên tử)];: Đảm bảo rằng tất cả các thao tác
+  trong một transaction đều hoàn tất thành công, hoặc không có thao tác
+  nào được thực hiện. Không có trạng thái \"một nửa hoàn thành\".
+- #strong[Consistency (Tính nhất quán)];: Đảm bảo rằng cơ sở dữ liệu
+  thay đổi từ một trạng thái hợp lệ sang một trạng thái hợp lệ khác sau
+  khi transaction hoàn tất.
+- #strong[Isolation (Tính độc lập)];: Đảm bảo rằng các transaction xảy
+  ra đồng thời không ảnh hưởng lẫn nhau. Kết quả của một transaction
+  không được hiển thị cho các transaction khác cho đến khi nó hoàn tất.
+- #strong[Durability (Tính bền vững)];: Đảm bảo rằng sau khi một
+  transaction hoàn tất, kết quả của nó sẽ được lưu trữ vĩnh viễn, ngay
+  cả trong trường hợp hệ thống gặp sự cố.
+
+Trong môi trường phân tán, các thao tác không chỉ diễn ra trên một cơ sở
+dữ liệu mà còn trên nhiều cơ sở dữ liệu, dịch vụ hoặc hệ thống khác
+nhau. Điều này làm phức tạp việc duy trì thuộc tính ACID và đòi hỏi các
+giao thức đặc biệt để đảm bảo tính nhất quán.
+
+Distributed transactions (giao dịch phân tán) có thêm một số thách thức:
+
++ #strong[Độ trễ mạng];: Việc truyền thông giữa các nút trong hệ thống
+  phân tán gây ra độ trễ, làm giảm hiệu suất.
++ #strong[Lỗi mạng];: Các kết nối mạng có thể bị đứt, dẫn đến việc không
+  thể truy cập các nút.
++ #strong[Lỗi nút];: Các nút riêng lẻ có thể gặp sự cố, làm gián đoạn
+  luồng thực hiện transaction.
++ #strong[Đồng thuận];: Việc các nút đồng ý về trạng thái của
+  transaction (commit hoặc abort) trở nên phức tạp hơn khi số lượng nút
+  tăng lên.
+
+Có nhiều giao thức được đề xuất để quản lý distributed transactions, bao
+gồm Two-Phase Commit (2PC), Three-Phase Commit (3PC) và Saga, mỗi loại
+có ưu và nhược điểm riêng.
 
 == Two-phase commit (2PC)
+<two-phase-commit-2pc>
+Two-phase commit (2PC) là một giao thức phổ biến nhất để đảm bảo tính
+toàn vẹn của distributed transactions. Như tên gọi, nó bao gồm hai giai
+đoạn chính: giai đoạn chuẩn bị (prepare phase) và giai đoạn commit
+(commit phase).
+
+=== Các thành phần của 2PC
+<các-thành-phần-của-2pc>
++ #strong[Coordinator (Điều phối viên)];: Một nút trung tâm chịu trách
+  nhiệm điều phối quá trình transaction, quyết định commit hoặc abort,
+  và lưu trữ kết quả cuối cùng.
++ #strong[Participants (Người tham gia)];: Các nút thực hiện các thao
+  tác thực tế của transaction và báo cáo trạng thái cho coordinator.
+
+=== Quy trình thực hiện 2PC
+<quy-trình-thực-hiện-2pc>
+==== Giai đoạn 1: Prepare Phase (Giai đoạn chuẩn bị)
+<giai-đoạn-1-prepare-phase-giai-đoạn-chuẩn-bị>
++ Coordinator gửi thông điệp \"prepare\" tới tất cả các participants.
++ Mỗi participant:
+  - Thực hiện các thao tác của transaction.
+  - Lưu trữ trạng thái transaction vào bộ nhớ ổn định (stable storage)
+    để có thể phục hồi nếu cần.
+  - Trả lời coordinator với \"vote\_commit\" nếu sẵn sàng commit, hoặc
+    \"vote\_abort\" nếu không thể commit vì bất kỳ lý do gì.
+
+==== Giai đoạn 2: Commit Phase (Giai đoạn commit)
+<giai-đoạn-2-commit-phase-giai-đoạn-commit>
++ Coordinator nhận phản hồi từ tất cả participants:
+  - Nếu tất cả đều trả lời \"vote\_commit\", coordinator quyết định
+    \"global\_commit\" và gửi thông điệp \"commit\" tới tất cả
+    participants.
+  - Nếu bất kỳ participant nào trả lời \"vote\_abort\", coordinator
+    quyết định \"global\_abort\" và gửi thông điệp \"abort\" tới tất cả
+    participants.
++ Mỗi participant:
+  - Nếu nhận được \"commit\", hoàn tất transaction và giải phóng tài
+    nguyên.
+  - Nếu nhận được \"abort\", hoàn tác (rollback) transaction và giải
+    phóng tài nguyên.
++ Participants gửi thông báo xác nhận (acknowledgment) về coordinator.
+
+=== Ưu điểm của 2PC
+<ưu-điểm-của-2pc>
++ #strong[Đảm bảo tính toàn vẹn];: 2PC đảm bảo rằng một transaction hoặc
+  được thực hiện đầy đủ trên tất cả các nút, hoặc không được thực hiện
+  trên bất kỳ nút nào.
++ #strong[Đơn giản];: Giao thức này tương đối đơn giản để hiểu và triển
+  khai so với các giải pháp phức tạp hơn.
++ #strong[Được hỗ trợ rộng rãi];: Nhiều hệ thống cơ sở dữ liệu và
+  middleware hỗ trợ 2PC.
+
+=== Nhược điểm của 2PC
+<nhược-điểm-của-2pc>
++ #strong[Blocking protocol];: Nếu coordinator gặp sự cố sau giai đoạn
+  chuẩn bị, các participants sẽ bị chặn (blocked) cho đến khi
+  coordinator phục hồi. Điều này có thể gây ra hiệu suất kém và thời
+  gian chết (downtime).
++ #strong[Vấn đề hiệu suất];: Quá trình giao tiếp hai chiều nhiều lần
+  làm tăng độ trễ và giảm hiệu suất, đặc biệt trong môi trường có độ trễ
+  mạng cao.
++ #strong[Single point of failure];: Coordinator là điểm yếu của hệ
+  thống, nếu nó gặp sự cố, toàn bộ hệ thống có thể bị ảnh hưởng.
++ #strong[Chi phí khóa tài nguyên];: Tài nguyên bị khóa trong suốt quá
+  trình transaction, điều này có thể dẫn đến hiệu suất kém trong các hệ
+  thống có tải cao.
+
+=== Ví dụ thực tế về 2PC
+<ví-dụ-thực-tế-về-2pc>
+Giả sử một ngân hàng cần chuyển tiền từ tài khoản A sang tài khoản B,
+hai tài khoản nằm trên hai cơ sở dữ liệu khác nhau:
+
++ #strong[Prepare Phase];:
+
+  - Coordinator gửi thông điệp \"prepare\" đến cả hai cơ sở dữ liệu.
+  - Cơ sở dữ liệu chứa tài khoản A kiểm tra số dư, trừ tiền, lưu trạng
+    thái vào log, và gửi \"vote\_commit\".
+  - Cơ sở dữ liệu chứa tài khoản B chuẩn bị thêm tiền, lưu trạng thái
+    vào log, và gửi \"vote\_commit\".
+
++ #strong[Commit Phase];:
+
+  - Coordinator nhận \"vote\_commit\" từ cả hai nút, gửi \"commit\" đến
+    cả hai.
+  - Cả hai cơ sở dữ liệu commit transaction, và xác nhận với
+    coordinator.
+  - Coordinator đánh dấu transaction là hoàn tất.
+
+Nếu tài khoản A không đủ tiền hoặc có lỗi xảy ra, một trong các nút sẽ
+gửi \"vote\_abort\", và coordinator sẽ gửi \"abort\" đến cả hai nút, yêu
+cầu hoàn tác thay đổi.
 
 == Three-phase commit (3PC)
+<three-phase-commit-3pc>
+Three-phase commit (3PC) là một cải tiến của giao thức Two-phase commit,
+được thiết kế để giải quyết vấn đề blocking trong 2PC. 3PC thêm một giai
+đoạn trung gian, chia quá trình thành ba giai đoạn chính: pre-commit,
+prepare to commit, và commit.
+
+=== Các thành phần của 3PC
+<các-thành-phần-của-3pc>
+Tương tự như 2PC, 3PC cũng có:
+
++ #strong[Coordinator];: Điều phối quá trình transaction.
++ #strong[Participants];: Các nút thực hiện thao tác và báo cáo trạng
+  thái.
+
+=== Quy trình thực hiện 3PC
+<quy-trình-thực-hiện-3pc>
+==== Giai đoạn 1: Canvassing Phase (Giai đoạn thăm dò)
+<giai-đoạn-1-canvassing-phase-giai-đoạn-thăm-dò>
++ Coordinator gửi thông điệp \"can\_commit?\" đến tất cả participants.
++ Mỗi participant:
+  - Kiểm tra xem có thể commit transaction không, nhưng chưa thực hiện
+    bất kỳ thao tác nào.
+  - Trả lời \"yes\" nếu có thể commit, hoặc \"no\" nếu không thể.
+
+==== Giai đoạn 2: Prepare Phase (Giai đoạn chuẩn bị)
+<giai-đoạn-2-prepare-phase-giai-đoạn-chuẩn-bị>
++ Nếu tất cả participants trả lời \"yes\" trong giai đoạn 1, coordinator
+  gửi thông điệp \"prepare\_commit\" đến tất cả.
++ Mỗi participant:
+  - Thực hiện các thao tác transaction và lưu trạng thái vào bộ nhớ ổn
+    định.
+  - Trả lời \"ACK\" (acknowledgment) để xác nhận đã nhận và xử lý thông
+    điệp.
+  - Chuyển sang trạng thái \"prepared\", sẵn sàng commit nhưng chưa
+    commit.
+
+==== Giai đoạn 3: Commit Phase (Giai đoạn commit)
+<giai-đoạn-3-commit-phase-giai-đoạn-commit>
++ Sau khi nhận được \"ACK\" từ tất cả participants, coordinator gửi
+  thông điệp \"do\_commit\" đến tất cả.
++ Mỗi participant:
+  - Commit transaction và giải phóng tài nguyên.
+  - Gửi xác nhận cuối cùng đến coordinator.
+
+=== Xử lý lỗi trong 3PC
+<xử-lý-lỗi-trong-3pc>
+3PC có cơ chế xử lý lỗi phức tạp hơn 2PC:
+
++ #strong[Lỗi participant trong giai đoạn 1];: Tương tự như 2PC,
+  coordinator sẽ abort transaction.
++ #strong[Lỗi participant trong giai đoạn 2 hoặc 3];: Các participants
+  khác có thể tiếp tục và commit transaction, dựa trên timeout và thuật
+  toán đồng thuận.
++ #strong[Lỗi coordinator];: Participants có thể chọn coordinator mới
+  thông qua thuật toán bầu chọn và tiếp tục transaction.
+
+=== Ưu điểm của 3PC
+<ưu-điểm-của-3pc>
++ #strong[Non-blocking];: 3PC là giao thức non-blocking, giải quyết vấn
+  đề chính của 2PC. Nếu coordinator gặp sự cố, participants vẫn có thể
+  tiến hành và hoàn tất transaction.
++ #strong[Khả năng phục hồi tốt hơn];: 3PC cung cấp cơ chế phục hồi tốt
+  hơn trong trường hợp lỗi, nhờ vào trạng thái trung gian
+  \"prepare\_commit\".
++ #strong[Phát hiện lỗi hiệu quả];: Giai đoạn đầu tiên giúp phát hiện
+  sớm các lỗi tiềm ẩn trước khi thực hiện bất kỳ thay đổi nào.
+
+=== Nhược điểm của 3PC
+<nhược-điểm-của-3pc>
++ #strong[Phức tạp hơn];: 3PC phức tạp hơn 2PC, đòi hỏi triển khai và
+  quản lý phức tạp hơn.
++ #strong[Hiệu suất thấp hơn trong trường hợp bình thường];: Thêm một
+  giai đoạn làm tăng số lượng thông điệp và độ trễ, dẫn đến hiệu suất
+  kém hơn trong trường hợp không có lỗi.
++ #strong[Vấn đề phân mảng mạng];: 3PC không hoàn toàn giải quyết được
+  vấn đề phân mảng mạng (network partitioning), có thể dẫn đến tình
+  trạng không nhất quán trong một số tình huống.
++ #strong[Sử dụng tài nguyên nhiều hơn];: Do có thêm một giai đoạn và cơ
+  chế phức tạp hơn, 3PC sử dụng nhiều tài nguyên hệ thống hơn.
+
+=== Ví dụ thực tế về 3PC
+<ví-dụ-thực-tế-về-3pc>
+Lấy lại ví dụ chuyển tiền giữa hai tài khoản A và B trên hai cơ sở dữ
+liệu khác nhau:
+
++ #strong[Canvassing Phase];:
+
+  - Coordinator gửi \"can\_commit?\" đến cả hai cơ sở dữ liệu.
+  - Cơ sở dữ liệu A kiểm tra số dư, xác nhận đủ tiền, gửi \"yes\".
+  - Cơ sở dữ liệu B kiểm tra tài khoản tồn tại, gửi \"yes\".
+
++ #strong[Prepare Phase];:
+
+  - Coordinator gửi \"prepare\_commit\" đến cả hai.
+  - Cơ sở dữ liệu A trừ tiền, lưu trạng thái, gửi \"ACK\".
+  - Cơ sở dữ liệu B chuẩn bị cộng tiền, lưu trạng thái, gửi \"ACK\".
+
++ #strong[Commit Phase];:
+
+  - Coordinator gửi \"do\_commit\" đến cả hai.
+  - Cả hai cơ sở dữ liệu commit transaction và xác nhận.
+
+Trong trường hợp coordinator gặp sự cố sau giai đoạn prepare, các
+participants có thể quyết định commit sau một khoảng thời gian timeout,
+vì họ đã đi qua giai đoạn prepare và biết rằng tất cả các participants
+khác cũng đã sẵn sàng commit.
 
 == Saga
+<saga>
+Saga là một mô hình quản lý giao dịch phân tán được thiết kế để duy trì
+tính nhất quán trong các ứng dụng có quy mô lớn, đặc biệt là trong kiến
+trúc microservices. Khác với 2PC và 3PC, Saga không cố gắng đảm bảo tính
+ACID nghiêm ngặt, mà tập trung vào tính nhất quán cuối cùng (eventual
+consistency) thông qua chuỗi các giao dịch cục bộ và các cơ chế bù trừ.
+
+=== Nguyên lý hoạt động của Saga
+<nguyên-lý-hoạt-động-của-saga>
+Saga chia một giao dịch phân tán lớn thành nhiều giao dịch cục bộ nhỏ
+hơn. Mỗi giao dịch cục bộ cập nhật dữ liệu trong một dịch vụ, và sau đó
+kích hoạt giao dịch tiếp theo trong chuỗi. Nếu một giao dịch thất bại,
+Saga thực hiện các giao dịch bù trừ để hoàn tác những thay đổi đã được
+thực hiện.
+
+=== Các thành phần của Saga
+<các-thành-phần-của-saga>
++ #strong[Các giao dịch cục bộ (Local transactions)];: Mỗi bước trong
+  Saga thực hiện một giao dịch riêng biệt, tự chứa trên một dịch vụ hoặc
+  cơ sở dữ liệu.
++ #strong[Các hành động bù trừ (Compensating actions)];: Cho mỗi giao
+  dịch cục bộ, Saga định nghĩa một hành động bù trừ tương ứng để hoàn
+  tác thay đổi khi cần thiết.
++ #strong[Cơ chế điều phối (Coordination mechanism)];: Một cơ chế để
+  điều phối luồng thực hiện các giao dịch cục bộ và hành động bù trừ.
+
+=== Cách triển khai Saga
+<cách-triển-khai-saga>
+Có hai cách chính để triển khai Saga:
+
+==== 1. Choreography-based Saga (Saga dựa trên biên đạo)
+<1-choreography-based-saga-saga-dựa-trên-biên-đạo>
+- Các dịch vụ giao tiếp với nhau thông qua sự kiện, không có điều phối
+  viên trung tâm.
+- Mỗi dịch vụ thực hiện phần của mình trong giao dịch và phát sự kiện để
+  thông báo cho dịch vụ tiếp theo.
+- Nếu một dịch vụ gặp lỗi, nó phát sự kiện thất bại, kích hoạt các hành
+  động bù trừ ở các dịch vụ trước đó.
+
+#strong[Ưu điểm];:
+
+- Phi tập trung, không có single point of failure.
+- Ít phức tạp trong triển khai ban đầu.
+- Tách biệt cao giữa các dịch vụ.
+
+#strong[Nhược điểm];:
+
+- Khó theo dõi và gỡ lỗi.
+- Khó thực hiện các yêu cầu phức tạp hoặc chuỗi giao dịch dài.
+- Khả năng mở rộng phức tạp khi số lượng dịch vụ tăng.
+
+==== 2. Orchestration-based Saga (Saga dựa trên điều phối)
+<2-orchestration-based-saga-saga-dựa-trên-điều-phối>
+- Có một dịch vụ trung tâm (orchestrator) điều phối toàn bộ quy trình.
+- Orchestrator quyết định gọi dịch vụ nào tiếp theo và khi nào cần thực
+  hiện bù trừ.
+- Orchestrator duy trì trạng thái của toàn bộ quy trình.
+
+#strong[Ưu điểm];:
+
+- Dễ theo dõi và gỡ lỗi.
+- Xử lý tốt các quy trình phức tạp.
+- Tập trung hóa logic điều phối.
+
+#strong[Nhược điểm];:
+
+- Có nguy cơ trở thành single point of failure.
+- Có thể tạo ra sự phụ thuộc giữa các dịch vụ và orchestrator.
+- Phức tạp hơn trong việc triển khai ban đầu.
+
+=== Quá trình xử lý lỗi trong Saga
+<quá-trình-xử-lý-lỗi-trong-saga>
+Khi một giao dịch cục bộ thất bại, Saga thực hiện các hành động bù trừ
+cho tất cả các giao dịch đã hoàn thành theo thứ tự ngược lại:
+
++ Phát hiện lỗi trong một giao dịch cục bộ.
++ Dừng thực hiện các giao dịch còn lại.
++ Bắt đầu thực hiện các hành động bù trừ theo thứ tự ngược lại.
++ Đưa hệ thống về trạng thái nhất quán.
+
+=== Ưu điểm của Saga
+<ưu-điểm-của-saga>
++ #strong[Khả năng mở rộng];: Saga hoạt động tốt trong các hệ thống phân
+  tán quy mô lớn và kiến trúc microservices.
++ #strong[Tính sẵn sàng cao];: Không bị chặn bởi các giao dịch dài, mỗi
+  dịch vụ có thể tiếp tục hoạt động độc lập.
++ #strong[Phù hợp với microservices];: Mỗi dịch vụ quản lý dữ liệu riêng
+  và chỉ thực hiện các giao dịch cục bộ.
++ #strong[Không khóa tài nguyên];: Giảm thiểu thời gian khóa tài nguyên,
+  cải thiện đáng kể hiệu suất.
++ #strong[Tính linh hoạt];: Có thể triển khai theo nhiều cách khác nhau
+  tùy thuộc vào yêu cầu hệ thống.
+
+=== Nhược điểm của Saga
+<nhược-điểm-của-saga>
++ #strong[Không đảm bảo tính isolation];: Saga không cung cấp isolation,
+  có thể dẫn đến truy cập dữ liệu trung gian giữa các bước.
++ #strong[Phức tạp trong thiết kế hành động bù trừ];: Việc thiết kế các
+  hành động bù trừ hiệu quả có thể rất phức tạp.
++ #strong[Xử lý lỗi phức tạp];: Cần xử lý nhiều tình huống lỗi khác
+  nhau, bao gồm cả lỗi trong các hành động bù trừ.
++ #strong[Tính nhất quán cuối cùng];: Hệ thống có thể ở trạng thái không
+  nhất quán tạm thời.
++ #strong[Khó gỡ lỗi];: Theo dõi và gỡ lỗi các giao dịch phân tán phức
+  tạp phức tạp hơn so với các giao dịch đơn lẻ.
+
+=== Ví dụ thực tế về Saga
+<ví-dụ-thực-tế-về-saga>
+Xét ví dụ về quy trình đặt hàng trong hệ thống thương mại điện tử
+microservices:
+
+#strong[Chuỗi giao dịch chính];:
+
++ Dịch vụ Order tạo đơn hàng mới trong trạng thái \"Pending\".
++ Dịch vụ Payment xử lý thanh toán.
++ Dịch vụ Inventory cập nhật số lượng hàng tồn kho.
++ Dịch vụ Shipping tạo đơn vận chuyển.
++ Dịch vụ Order cập nhật trạng thái đơn hàng thành \"Confirmed\".
+
+#strong[Các hành động bù trừ];:
+
++ Dịch vụ Shipping: Hủy đơn vận chuyển.
++ Dịch vụ Inventory: Hoàn trả số lượng hàng.
++ Dịch vụ Payment: Hoàn tiền cho khách hàng.
++ Dịch vụ Order: Đánh dấu đơn hàng là \"Cancelled\".
+
+#strong[Kịch bản lỗi];:
+
+- Nếu dịch vụ Shipping không thể tạo đơn vận chuyển (ví dụ: không có
+  phương tiện vận chuyển đến địa chỉ khách hàng), quy trình sẽ:
+  + Dịch vụ Inventory hoàn trả số lượng hàng.
+  + Dịch vụ Payment hoàn tiền cho khách hàng.
+  + Dịch vụ Order đánh dấu đơn hàng là \"Cancelled\".
+
+Trong kiến trúc choreography, mỗi dịch vụ sẽ phát sự kiện khi hoàn thành
+hoặc thất bại, và dịch vụ tiếp theo sẽ phản ứng theo sự kiện đó. Trong
+kiến trúc orchestration, một dịch vụ Saga Orchestrator sẽ quản lý toàn
+bộ quy trình và gọi các dịch vụ theo thứ tự phù hợp.
 
 == So sánh Two-phase commit/Three-phase commit và Saga
+<so-sánh-two-phase-committhree-phase-commit-và-saga>
+=== Bối cảnh sử dụng
+<bối-cảnh-sử-dụng>
+==== Two-phase commit (2PC) và Three-phase commit (3PC)
+<two-phase-commit-2pc-và-three-phase-commit-3pc>
+- Phù hợp cho các hệ thống yêu cầu tính ACID nghiêm ngặt.
+- Thường được sử dụng trong các hệ thống cơ sở dữ liệu phân tán truyền
+  thống.
+- Tốt cho các giao dịch ngắn và ít phức tạp.
+- Phù hợp khi các dịch vụ tham gia giao dịch có sẵn hầu hết thời gian.
+
+==== Saga
+<saga-1>
+- Phù hợp cho kiến trúc microservices và hệ thống phân tán quy mô lớn.
+- Lý tưởng cho các giao dịch kéo dài và phức tạp.
+- Tốt cho hệ thống cần tính sẵn sàng cao và khả năng mở rộng.
+- Phù hợp khi hệ thống có thể chấp nhận tính nhất quán cuối cùng.
+
+=== So sánh chi tiết
+<so-sánh-chi-tiết>
+==== Mô hình giao dịch
+<mô-hình-giao-dịch>
+#figure(
+  align(center)[#table(
+    columns: 3,
+    align: (auto,auto,auto,),
+    table.header([Giao thức], [Mô hình giao dịch], [Phạm vi áp dụng],),
+    table.hline(),
+    [2PC], [Giao dịch toàn cục với các thuộc tính ACID đầy đủ], [Phù hợp
+    với các hệ thống cơ sở dữ liệu quan hệ phân tán],
+    [3PC], [Giao dịch toàn cục với thuộc tính ACID và khả năng
+    non-blocking], [Hệ thống cơ sở dữ liệu phân tán có yêu cầu cao về
+    tính sẵn sàng],
+    [Saga], [Chuỗi các giao dịch cục bộ với tính nhất quán cuối
+    cùng], [Kiến trúc microservices và hệ thống phân tán quy mô lớn],
+  )]
+  , kind: table
+  )
+
+==== Xử lý lỗi và khả năng phục hồi
+<xử-lý-lỗi-và-khả-năng-phục-hồi>
+#figure(
+  align(center)[#table(
+    columns: 4,
+    align: (auto,auto,auto,auto,),
+    table.header([Giao thức], [Cơ chế xử lý lỗi], [Khả năng phục
+      hồi], [Tính blocking],),
+    table.hline(),
+    [2PC], [Rollback toàn bộ nếu có lỗi], [Yếu trong trường hợp
+    coordinator gặp sự cố], [Blocking],
+    [3PC], [Rollback toàn bộ với cơ chế phục hồi tốt hơn], [Tốt hơn 2PC,
+    có thể tiếp tục nếu coordinator gặp sự cố], [Non-blocking],
+    [Saga], [Các hành động bù trừ (compensating transactions)], [Tốt,
+    mỗi dịch vụ có thể xử lý lỗi độc lập], [Non-blocking],
+  )]
+  , kind: table
+  )
+
+==== Hiệu suất và khả năng mở rộng
+<hiệu-suất-và-khả-năng-mở-rộng>
+#figure(
+  align(center)[#table(
+    columns: 4,
+    align: (auto,auto,auto,auto,),
+    table.header([Giao thức], [Hiệu suất], [Khả năng mở rộng], [Tài
+      nguyên cần thiết],),
+    table.hline(),
+    [2PC], [Thấp, do khóa tài nguyên và trao đổi thông điệp], [Hạn
+    chế], [Cao, do khóa tài nguyên],
+    [3PC], [Thấp hơn 2PC trong trường hợp bình thường], [Trung
+    bình], [Rất cao, do thêm một giai đoạn],
+    [Saga], [Cao, không khóa tài nguyên trong thời gian dài], [Rất
+    tốt], [Thấp, do không khóa tài nguyên],
+  )]
+  , kind: table
+  )
+
+==== Tính nhất quán và độc lập
+<tính-nhất-quán-và-độc-lập>
+#figure(
+  align(center)[#table(
+    columns: 4,
+    align: (auto,auto,auto,auto,),
+    table.header([Giao thức], [Tính nhất quán], [Tính độc lập
+      (Isolation)], [Độ phức tạp triển khai],),
+    table.hline(),
+    [2PC], [Đảm bảo tính nhất quán mạnh], [Đảm bảo tính độc lập], [Trung
+    bình],
+    [3PC], [Đảm bảo tính nhất quán mạnh], [Đảm bảo tính độc lập], [Cao],
+    [Saga], [Tính nhất quán cuối cùng], [Không đảm bảo tính độc
+    lập], [Trung bình đến cao, tùy vào cơ chế điều phối],
+  )]
+  , kind: table
+  )
+
+==== Khả năng đáp ứng trong môi trường phân tán
+<khả-năng-đáp-ứng-trong-môi-trường-phân-tán>
+#figure(
+  align(center)[#table(
+    columns: 4,
+    align: (auto,auto,auto,auto,),
+    table.header([Giao thức], [Đáp ứng lỗi mạng], [Đáp ứng phân mảng
+      mạng], [Độ trễ],),
+    table.hline(),
+    [2PC], [Kém, dễ bị chặn], [Kém, có thể dẫn đến trạng thái không nhất
+    quán], [Cao, do nhiều vòng trao đổi thông điệp],
+    [3PC], [Trung bình], [Trung bình, giải quyết một số vấn đề nhưng vẫn
+    tồn tại hạn chế], [Rất cao, do thêm một giai đoạn trao đổi],
+    [Saga], [Tốt], [Tốt, mỗi dịch vụ có thể hoạt động độc lập], [Thấp,
+    do trao đổi thông điệp tối thiểu],
+  )]
+  , kind: table
+  )
+
+=== Trường hợp sử dụng phù hợp
+<trường-hợp-sử-dụng-phù-hợp>
+==== Two-phase commit (2PC)
+<two-phase-commit-2pc>
+- #strong[Phù hợp khi];:
+
+  - Hệ thống yêu cầu tính ACID đầy đủ.
+  - Giao dịch ngắn và đơn giản.
+  - Hệ thống mạng ổn định với độ trễ thấp.
+  - Số lượng nút tham gia nhỏ.
+  - Cần đảm bảo tính nhất quán mạnh.
+
+- #strong[Ví dụ thực tế];:
+
+  - Giao dịch ngân hàng yêu cầu tính nhất quán cao.
+  - Hệ thống dự phòng thảm họa cần sao lưu dữ liệu đồng bộ.
+  - Các hệ thống tài chính với yêu cầu tuân thủ nghiêm ngặt.
+
+==== Three-phase commit (3PC)
+<three-phase-commit-3pc>
+- #strong[Phù hợp khi];:
+
+  - Hệ thống yêu cầu tính ACID đầy đủ.
+  - Tính sẵn sàng là ưu tiên cao.
+  - Có thể chấp nhận hiệu suất thấp để đổi lấy độ tin cậy.
+  - Cần giảm thiểu khả năng bị chặn.
+
+- #strong[Ví dụ thực tế];:
+
+  - Hệ thống điều khiển phân tán thời gian thực.
+  - Hệ thống điện toán đám mây cần tính sẵn sàng cao.
+  - Hệ thống tài chính yêu cầu cả tính nhất quán cao và tính sẵn sàng.
+
+==== Saga
+<saga>
+- #strong[Phù hợp khi];:
+
+  - Kiến trúc microservices.
+  - Giao dịch phức tạp và kéo dài.
+  - Có thể chấp nhận tính nhất quán cuối cùng.
+  - Cần khả năng mở rộng cao.
+  - Yêu cầu tính sẵn sàng cao.
+
+- #strong[Ví dụ thực tế];:
+
+  - Hệ thống thương mại điện tử.
+  - Hệ thống đặt vé và lập lịch.
+  - Ứng dụng xử lý đơn hàng phức tạp.
+  - Ứng dụng di động với kết nối không ổn định.
 
 = Consensus
 
+Consensus là một khái niệm quan trọng trong hệ thống phân tán, đề cập
+đến quá trình các nút trong hệ thống đạt được sự thống nhất về một giá
+trị hoặc trạng thái. Bài viết này sẽ tìm hiểu về vấn đề consensus và đi
+sâu vào thuật toán Raft - một trong những giải pháp phổ biến để giải
+quyết vấn đề này.
+
 == Vấn đề consensus
+<vấn-đề-consensus>
+Vấn đề đồng thuận (consensus) trong hệ thống phân tán là thách thức làm
+thế nào để tất cả các nút trong hệ thống có thể đi đến sự thống nhất về
+một giá trị hoặc trạng thái khi hệ thống có thể gặp phải nhiều sự cố
+như:
+
+- Sự chậm trễ trong truyền thông điệp giữa các nút
+- Các nút có thể bị lỗi hoặc ngừng hoạt động (node failures)
+- Hệ thống mạng không đáng tin cậy, có thể mất kết nối hoặc trễ cao
+- Các nút có thể hoạt động với tốc độ khác nhau
+- Tình huống phân mảng mạng (network partition)
+
+Vấn đề consensus đặc biệt khó khăn trong môi trường bất đồng bộ
+(asynchronous environment), nơi không có giới hạn về thời gian truyền
+tin và các nút có thể bị trì hoãn vô hạn.
+
+Một thuật toán consensus hiệu quả cần đảm bảo các tính chất sau:
+
++ #strong[Tính thống nhất (Agreement)];: Tất cả các nút không bị lỗi
+  cuối cùng sẽ quyết định cùng một giá trị.
++ #strong[Tính chính xác (Validity)];: Giá trị được quyết định phải là
+  giá trị được đề xuất bởi ít nhất một nút trong hệ thống.
++ #strong[Tính kết thúc (Termination)];: Tất cả các nút không bị lỗi
+  cuối cùng sẽ đi đến quyết định.
+
+Trong thực tế, nhiều thuật toán consensus đã được phát triển, bao gồm
+Paxos, Raft, Zab, PBFT (Practical Byzantine Fault Tolerance), và
+Tendermint. Mỗi thuật toán có những ưu điểm và nhược điểm riêng, phù hợp
+với các trường hợp sử dụng khác nhau.
 
 == Thuật toán Raft
-
+<thuật-toán-raft>
 === Khái quát về Raft
+<khái-quát-về-raft>
+Raft là một thuật toán đồng thuận được đề xuất bởi Diego Ongaro và John
+Ousterhout vào năm 2014 với mục tiêu tạo ra một giải pháp dễ hiểu hơn so
+với Paxos. Tên \"Raft\" là từ viết tắt của \"Reliable, Replicated,
+Redundant, And Fault-Tolerant\" (Đáng tin cậy, Nhân bản, Dự phòng và
+Chịu lỗi).
+
+Raft hoạt động dựa trên mô hình máy trạng thái sao chép (replicated
+state machine), trong đó nhiều máy trạng thái đồng nhất được duy trì
+trên nhiều nút khác nhau. Những máy trạng thái này được cập nhật thông
+qua một log lệnh (command log) đồng nhất.
+
+Nguyên tắc cốt lõi của Raft là:
+
++ #strong[Phân chia vấn đề];: Raft chia vấn đề consensus thành ba vấn đề
+  con dễ hiểu hơn:
+
+  - Bầu cử leader (Leader election)
+  - Sao chép log (Log replication)
+  - Đảm bảo an toàn (Safety)
+
++ #strong[Mô hình vai trò];: Trong Raft, mỗi nút có thể ở một trong ba
+  vai trò:
+
+  - #strong[Leader];: Xử lý tất cả các yêu cầu từ khách hàng và quản lý
+    sao chép log đến các nút khác
+  - #strong[Follower];: Thụ động, chỉ phản hồi các yêu cầu từ leader và
+    ứng cử viên (candidate)
+  - #strong[Candidate];: Vai trò trung gian khi một follower khởi động
+    quá trình bầu cử để trở thành leader
+
++ #strong[Nhiệm kỳ (Term)];: Thời gian được chia thành các nhiệm kỳ
+  (term) có số đánh liên tiếp. Mỗi nhiệm kỳ bắt đầu bằng một cuộc bầu cử
+  để chọn ra một leader mới. Nếu không có leader nào được bầu, nhiệm kỳ
+  kết thúc và một nhiệm kỳ mới bắt đầu.
 
 === Bầu cử leader
+<bầu-cử-leader>
+Quy trình bầu cử leader trong Raft diễn ra như sau:
+
++ #strong[Khởi đầu bầu cử];:
+
+  - Mỗi nút khởi động với vai trò follower
+  - Nếu một follower không nhận được thông điệp từ leader trong một
+    khoảng thời gian ngẫu nhiên (election timeout), nó chuyển sang vai
+    trò candidate và bắt đầu một cuộc bầu cử mới
+  - Candidate tăng nhiệm kỳ hiện tại lên 1, bỏ phiếu cho chính mình và
+    gửi yêu cầu bỏ phiếu (RequestVote RPC) đến tất cả các nút khác
+
++ #strong[Quá trình bỏ phiếu];:
+
+  - Khi nhận được RequestVote RPC, follower sẽ bỏ phiếu cho candidate
+    nếu:
+    - Nhiệm kỳ của candidate lớn hơn hoặc bằng nhiệm kỳ hiện tại của
+      follower
+    - Follower chưa bỏ phiếu cho candidate khác trong nhiệm kỳ này
+    - Log của candidate ít nhất phải cập nhật bằng log của follower (dựa
+      trên index và term của mục log cuối cùng)
+  - Mỗi nút chỉ được bỏ phiếu một lần trong mỗi nhiệm kỳ
+
++ #strong[Kết quả bầu cử];:
+
+  - Candidate trở thành leader nếu nhận được đa số phiếu bầu (quá bán)
+    từ tất cả các nút trong cụm
+  - Nếu nhận được thông điệp từ một leader hợp lệ (có nhiệm kỳ lớn hơn
+    hoặc bằng), candidate sẽ trở lại vai trò follower
+  - Nếu không nhận được đủ phiếu bầu và không phát hiện leader, sau một
+    thời gian chờ ngẫu nhiên, candidate sẽ bắt đầu một cuộc bầu cử mới
+
++ #strong[Xử lý chia phiếu (Split votes)];:
+
+  - Nếu nhiều candidate bắt đầu bầu cử cùng lúc, có thể xảy ra tình
+    huống chia phiếu, không candidate nào nhận được đủ phiếu
+  - Để giải quyết vấn đề này, các timeout bầu cử được thiết lập ngẫu
+    nhiên, giúp một candidate có cơ hội bắt đầu bầu cử trước những
+    candidate khác
+
+Đặc điểm quan trọng là thời gian timeout ngẫu nhiên giúp tránh tình
+trạng bầu cử liên tục và đảm bảo hệ thống cuối cùng sẽ bầu được một
+leader.
 
 === Hoạt động bình thường của thuật toán
+<hoạt-động-bình-thường-của-thuật-toán>
+Sau khi leader được bầu, hệ thống Raft hoạt động theo quy trình sau:
+
++ #strong[Xử lý yêu cầu từ khách hàng];:
+
+  - Tất cả các yêu cầu từ khách hàng được chuyển đến leader
+  - Nếu khách hàng gửi yêu cầu đến follower, follower sẽ chuyển tiếp yêu
+    cầu đến leader
+
++ #strong[Sao chép log];:
+
+  - Khi nhận được yêu cầu, leader tạo một mục log mới và thêm vào log
+    của mình
+  - Leader gửi mục log mới đến tất cả các follower thông qua
+    AppendEntries RPC
+  - Các follower kiểm tra tính nhất quán của log và thêm mục mới vào log
+    của mình
+  - Follower phản hồi cho leader sau khi đã lưu trữ mục log mới
+
++ #strong[Cam kết (Commit)];:
+
+  - Khi leader xác nhận rằng mục log đã được sao chép thành công đến đa
+    số các nút, nó cam kết mục log đó
+  - Leader thông báo cho các follower về vị trí cam kết mới trong các
+    thông điệp AppendEntries tiếp theo
+  - Khi một mục log được cam kết, leader áp dụng nó vào máy trạng thái
+    và trả về kết quả cho khách hàng
+  - Các follower cũng áp dụng các mục log đã cam kết vào máy trạng thái
+    của họ
+
++ #strong[Duy trì vai trò leader];:
+
+  - Leader định kỳ gửi AppendEntries RPC (có thể không chứa mục log nào)
+    đến tất cả các follower để duy trì vai trò leader
+  - Các thông điệp này hoạt động như heartbeat, ngăn các follower bắt
+    đầu cuộc bầu cử mới
+
++ #strong[Đồng bộ hóa log];:
+
+  - Khi một mục log không nhất quán giữa leader và follower, leader sẽ
+    gửi lại các mục log cũ cho follower
+  - Leader duy trì nextIndex cho mỗi follower, chỉ ra mục log tiếp theo
+    sẽ gửi đến follower đó
+  - Nếu AppendEntries thất bại, leader giảm nextIndex và thử lại, cho
+    đến khi tìm thấy điểm nhất quán
+
++ #strong[Xử lý thay đổi cụm (membership changes)];:
+
+  - Thay đổi cấu hình cụm (thêm hoặc xóa nút) được thực hiện thông qua
+    cơ chế bỏ phiếu hai giai đoạn
+  - Đầu tiên, cụm chuyển sang cấu hình trung gian (joint consensus) bao
+    gồm cả cấu hình cũ và mới
+  - Sau khi joint consensus được cam kết, cụm chuyển sang cấu hình mới
+
++ #strong[Xử lý log compaction];:
+
+  - Để ngăn log phát triển vô hạn, Raft sử dụng cơ chế snapshot
+  - Mỗi nút định kỳ tạo snapshot của trạng thái hiện tại và loại bỏ các
+    mục log đã được đưa vào snapshot
+
+Trong toàn bộ quy trình, các thuộc tính an toàn của Raft được đảm bảo:
+
+- Nếu một mục log được cam kết ở một nhiệm kỳ, nó sẽ xuất hiện trong log
+  của tất cả các leader tương lai
+- Leader không bao giờ ghi đè lên các mục log của nó
+- Nếu hai log chứa một mục log có cùng index và term, thì tất cả các mục
+  log trước đó đều giống nhau
 
 === Ưu điểm và nhược điểm của Raft
-
+<ưu-điểm-và-nhược-điểm-của-raft>
 ==== Ưu điểm
+<ưu-điểm>
++ #strong[Dễ hiểu và triển khai];:
+
+  - Raft được thiết kế với mục tiêu dễ hiểu và dễ giải thích
+  - Phân chia vấn đề thành các module riêng biệt giúp đơn giản hóa thuật
+    toán
+  - Có nhiều tài liệu và trực quan hóa hỗ trợ việc hiểu thuật toán
+
++ #strong[Mô hình vai trò rõ ràng];:
+
+  - Việc phân chia vai trò thành leader, follower và candidate giúp đơn
+    giản hóa luồng điều khiển
+  - Tất cả các quyết định được tập trung ở leader, giảm độ phức tạp
+    trong việc đồng bộ hóa
+
++ #strong[Tính chịu lỗi cao];:
+
+  - Raft có thể chịu được lỗi của tối đa (N-1)/2 nút trong cụm N nút
+  - Cơ chế bầu cử hiệu quả giúp nhanh chóng khôi phục khi leader gặp sự
+    cố
+
++ #strong[Tính nhất quán mạnh (Strong consistency)];:
+
+  - Raft đảm bảo tính nhất quán mạnh cho dữ liệu, phù hợp với các ứng
+    dụng yêu cầu độ tin cậy cao
+  - Mọi thay đổi được cam kết đều được đảm bảo không bị mất khi có sự cố
+
++ #strong[Cơ chế log và snapshot hiệu quả];:
+
+  - Cơ chế log đơn giản và hiệu quả giúp dễ dàng triển khai và gỡ lỗi
+  - Hỗ trợ snapshot giúp quản lý kích thước log và tối ưu hiệu suất
+
++ #strong[Hỗ trợ thay đổi cấu hình động];:
+
+  - Raft cho phép thay đổi cấu hình cụm (thêm/xóa nút) trong khi hệ
+    thống vẫn hoạt động
+  - Cơ chế joint consensus đảm bảo an toàn khi thay đổi cấu hình
+
++ #strong[Triển khai rộng rãi];:
+
+  - Raft đã được triển khai trong nhiều hệ thống phân tán thực tế như
+    etcd, Consul, TiKV
+  - Cộng đồng phát triển mạnh với nhiều thư viện và công cụ hỗ trợ
 
 ==== Nhược điểm
+<nhược-điểm>
++ #strong[Hiệu suất bị ảnh hưởng bởi leader];:
+
+  - Tất cả các yêu cầu ghi phải đi qua leader, có thể tạo thành điểm
+    nghẽn
+  - Nếu leader gặp sự cố, hệ thống phải chờ bầu cử leader mới trước khi
+    xử lý các yêu cầu ghi
+
++ #strong[Độ trễ cao hơn trong một số trường hợp];:
+
+  - Yêu cầu phần lớn nút phải xác nhận trước khi cam kết, gây độ trễ
+    trong môi trường mạng chậm
+  - Nếu leader và follower có độ trễ kết nối cao, hiệu suất của toàn bộ
+    hệ thống sẽ bị ảnh hưởng
+
++ #strong[Không tối ưu cho mạng địa lý phân tán (geo-distributed
+  networks)];:
+
+  - Trong mạng phân tán địa lý với độ trễ cao giữa các vùng, Raft có thể
+    không hiệu quả bằng các giải pháp khác
+  - Cơ chế bầu cử và đồng bộ log có thể chậm trong môi trường độ trễ cao
+
++ #strong[Hạn chế khả năng mở rộng (scalability)];:
+
+  - Khi số lượng nút tăng lên, lưu lượng mạng từ leader đến các follower
+    tăng tuyến tính
+  - Hiệu suất có thể giảm khi số lượng nút trong cụm quá lớn
+
++ #strong[Không chịu được lỗi Byzantine];:
+
+  - Raft không được thiết kế để xử lý các lỗi Byzantine (nút có hành vi
+    độc hại hoặc không nhất quán)
+  - Nếu nút có hành vi độc hại, thuật toán có thể không đảm bảo tính
+    đúng đắn
+
++ #strong[Chi phí bảo trì log và snapshot];:
+
+  - Việc duy trì log và snapshot có thể tốn tài nguyên đáng kể, đặc biệt
+    với khối lượng ghi lớn
+  - Quá trình nén log (compaction) có thể ảnh hưởng đến hiệu suất hệ
+    thống
+
++ #strong[Phức tạp khi triển khai đầy đủ];:
+
+  - Mặc dù khái niệm cơ bản dễ hiểu, nhưng triển khai đầy đủ với tất cả
+    các tối ưu hóa có thể khá phức tạp
+  - Xử lý các trường hợp đặc biệt như phục hồi snapshot, thay đổi cấu
+    hình đòi hỏi sự cẩn thận
+
+== Các ứng dụng thực tế của Raft
+<các-ứng-dụng-thực-tế-của-raft>
+Thuật toán Raft đã được ứng dụng rộng rãi trong nhiều hệ thống phân tán
+hiện đại:
+
++ #strong[etcd];: Hệ thống lưu trữ khóa-giá trị phân tán được sử dụng
+  rộng rãi trong Kubernetes
++ #strong[Consul];: Hệ thống khám phá dịch vụ và cấu hình từ HashiCorp
++ #strong[TiKV];: Lớp lưu trữ khóa-giá trị phân tán của cơ sở dữ liệu
+  TiDB
++ #strong[CockroachDB];: Cơ sở dữ liệu SQL phân tán, sử dụng biến thể
+  của Raft
++ #strong[RethinkDB];: Cơ sở dữ liệu NoSQL với khả năng truy vấn thời
+  gian thực
++ #strong[InfluxDB];: Cơ sở dữ liệu chuỗi thời gian (time series
+  database)
 
 = Deployment
 
