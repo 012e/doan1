@@ -1125,6 +1125,8 @@ def get_user(user_id):
 Read-through là một pattern caching trong đó thư viện hoặc dịch vụ cache
 chịu trách nhiệm tải dữ liệu từ nguồn dữ liệu khi có cache miss.
 
+#image("images/2025-03-07-21-59-38.png")
+
 #strong[Cách hoạt động:]
 
 + Ứng dụng yêu cầu dữ liệu từ cache
@@ -1211,6 +1213,8 @@ public class UserService {
 <write-through>
 Write-through là một pattern caching trong đó mọi thao tác ghi dữ liệu
 được thực hiện đồng thời vào cache và hệ thống lưu trữ chính.
+
+#image("images/2025-03-07-21-59-53.png")
 
 #strong[Cách hoạt động:]
 
@@ -1304,6 +1308,8 @@ public class UserService {
 Write-back là một pattern caching trong đó thao tác ghi chỉ được thực
 hiện vào cache trước, sau đó mới được ghi vào hệ thống lưu trữ chính
 theo lịch trình hoặc điều kiện nhất định.
+
+#image("images/2025-03-07-22-00-39.png")
 
 #strong[Cách hoạt động:]
 
@@ -1432,6 +1438,8 @@ riêng biệt và giao tiếp thông qua các cơ chế nhẹ, thường là API
 HTTP. Các dịch vụ này được xây dựng xung quanh các khả năng kinh doanh
 và có thể được triển khai độc lập bởi các nhóm nhỏ, tự quản lý.
 
+#image("images/2025-03-07-22-01-46.png")
+
 === Sự phát triển của microservices
 <sự-phát-triển-của-microservices>
 Microservices xuất hiện như một phản ứng đối với những hạn chế của kiến
@@ -1553,26 +1561,55 @@ triển phần mềm.
     nội bộ
 
 === Mô hình giao tiếp bất đồng bộ
-<mô-hình-giao-tiếp-bất-đồng-bộ>
-+ #strong[Message Queuing]
 
-  - Sử dụng hàng đợi tin nhắn như RabbitMQ, ActiveMQ
-  - Tin nhắn được lưu trữ tạm thời cho đến khi được xử lý
-  - Mô hình giao tiếp point-to-point
-  - Đảm bảo tin nhắn được xử lý chính xác một lần
-  - Ví dụ thực tế: Nhiều hệ thống thanh toán và xử lý đơn hàng sử dụng
-    RabbitMQ
+==== Message Queuing
 
-+ #strong[Publish/Subscribe (Pub/Sub)]
+#strong[Message Queuing] là một cơ chế giao tiếp #strong[không đồng bộ]
+giữa các thành phần phần mềm, trong đó các #strong[thông điệp] được gửi
+vào một #strong[hàng đợi trung gian] và được xử lý khi có tài nguyên sẵn
+sàng. Nó giúp #strong[tách biệt] giữa #strong[producer] (bên gửi) và
+#strong[consumer] (bên nhận), đảm bảo hệ thống hoạt động ổn định ngay cả
+khi một số thành phần bị gián đoạn. #strong[Message Queuing] thường được
+sử dụng để #strong[cải thiện hiệu suất, tăng khả năng mở rộng và đảm bảo
+độ tin cậy] trong các hệ thống phân tán.
 
-  - Một nhà sản xuất gửi tin nhắn đến nhiều người tiêu dùng
-  - Thường sử dụng các nền tảng như Kafka, Google Pub/Sub
-  - Mô hình giao tiếp một-đến-nhiều
-  - Phù hợp cho các sự kiện cần được xử lý bởi nhiều dịch vụ
-  - Ví dụ thực tế: Netflix sử dụng Kafka để xử lý luồng dữ liệu thời
-    gian thực
 
-+ #strong[Event Streaming]
+#image("images/2025-03-07-22-03-13.png")
+
+- Sử dụng hàng đợi tin nhắn như RabbitMQ, ActiveMQ
+- Tin nhắn được lưu trữ tạm thời cho đến khi được xử lý
+- Mô hình giao tiếp point-to-point
+- Đảm bảo tin nhắn được xử lý chính xác một lần
+- Ví dụ thực tế: Nhiều hệ thống thanh toán và xử lý đơn hàng sử dụng
+  RabbitMQ
+
+==== Publish/Subscribe (Pub/Sub)
+#strong[Publish/Subscribe (Pub/Sub)] là một mô hình giao tiếp
+#strong[không đồng bộ] trong đó #strong[publisher] (bên phát) gửi thông
+điệp đến một #strong[kênh chung] mà không cần biết ai sẽ nhận.
+#strong[Subscriber] (bên nhận) đăng ký vào kênh để nhận thông điệp phù
+hợp. Các thông điệp được gửi #strong[một lần] và có thể được nhận bởi
+#strong[nhiều subscriber] cùng lúc. Mô hình này giúp hệ thống
+#strong[tách biệt] giữa bên phát và bên nhận, #strong[tăng khả năng mở
+rộng] và #strong[giảm phụ thuộc trực tiếp] giữa các thành phần.
+
+#image("images/2025-03-07-22-04-19.png")
+
+- Một nhà sản xuất gửi tin nhắn đến nhiều người tiêu dùng
+- Thường sử dụng các nền tảng như Kafka, Google Pub/Sub
+- Mô hình giao tiếp một-đến-nhiều
+- Phù hợp cho các sự kiện cần được xử lý bởi nhiều dịch vụ
+- Ví dụ thực tế: Netflix sử dụng Kafka để xử lý luồng dữ liệu thời
+  gian thực
+
+==== Event Streaming
+#strong[Event Streaming] là một mô hình xử lý dữ liệu #strong[theo luồng
+sự kiện];, trong đó các sự kiện được tạo ra, lưu trữ, xử lý và tiêu thụ
+#strong[liên tục theo thời gian thực];. Dữ liệu được ghi vào một
+#strong[log sự kiện] và có thể được nhiều hệ thống tiêu thụ theo nhu
+cầu. Event Streaming giúp #strong[xử lý dữ liệu liên tục];, #strong[tăng
+khả năng mở rộng];, #strong[cải thiện hiệu suất] và hỗ trợ #strong[kiến
+trúc hướng sự kiện] trong các hệ thống phân tán.
 
   - Xử lý luồng liên tục các sự kiện
   - Thường triển khai bằng Apache Kafka hoặc AWS Kinesis
@@ -1612,36 +1649,6 @@ triển phần mềm.
   - Mô hình pub/sub với mức QoS khác nhau
   - Phổ biến trong IoT và ứng dụng di động
 
-=== Định dạng dữ liệu
-<định-dạng-dữ-liệu>
-+ #strong[JSON (JavaScript Object Notation)]
-
-  - Định dạng dữ liệu phổ biến nhất cho API web
-  - Dễ đọc cho con người và dễ phân tích cho máy
-  - Hỗ trợ rộng rãi trong hầu hết các ngôn ngữ lập trình
-  - Nhẹ hơn XML nhưng ít cấu trúc hơn
-
-+ #strong[XML (eXtensible Markup Language)]
-
-  - Định dạng dữ liệu có cấu trúc cao, có thể mở rộng
-  - Hỗ trợ không gian tên và lược đồ xác thực
-  - Dài dòng hơn so với JSON
-  - Vẫn được sử dụng trong nhiều ứng dụng doanh nghiệp
-
-+ #strong[Protocol Buffers (Protobuf)]
-
-  - Định dạng dữ liệu nhị phân nhỏ gọn do Google phát triển
-  - Nhanh hơn và nhỏ hơn đáng kể so với JSON và XML
-  - Yêu cầu định nghĩa lược đồ trước
-  - Sử dụng chủ yếu với gRPC
-
-+ #strong[Avro]
-
-  - Định dạng dữ liệu nhị phân do Apache phát triển
-  - Bao gồm lược đồ trong dữ liệu
-  - Hỗ trợ tiến hóa lược đồ tốt hơn Protobuf
-  - Phổ biến trong hệ sinh thái Hadoop và Kafka
-
 === Mẫu thiết kế giao tiếp trong microservices
 <mẫu-thiết-kế-giao-tiếp-trong-microservices>
 + #strong[API Gateway/Backend for Frontend (BFF)]
@@ -1672,59 +1679,9 @@ triển phần mềm.
   - Sử dụng nhà môi giới sự kiện (event broker) để điều phối
   - Cho phép mở rộng dễ dàng với các người tiêu thụ sự kiện mới
 
-=== Khám phá dịch vụ và đăng ký
-<khám-phá-dịch-vụ-và-đăng-ký>
-+ #strong[Client-side Discovery]
-
-  - Client truy vấn đăng ký dịch vụ để tìm vị trí dịch vụ
-  - Client thực hiện cân bằng tải và định tuyến
-  - Ví dụ: Netflix Eureka với Ribbon
-
-+ #strong[Server-side Discovery]
-
-  - Client gửi yêu cầu thông qua bộ cân bằng tải
-  - Bộ cân bằng tải tương tác với đăng ký dịch vụ
-  - Ví dụ: AWS ELB với ECS
-
-+ #strong[Service Registry Solutions]
-
-  - Consul: Cung cấp khám phá dịch vụ, cấu hình và phân đoạn
-  - etcd: Lưu trữ key-value phân tán được sử dụng bởi Kubernetes
-  - ZooKeeper: Dịch vụ điều phối phân tán được sử dụng trong Hadoop
-  - Eureka: Giải pháp khám phá dịch vụ của Netflix
-
-=== Chiến lược xử lý lỗi
-<chiến-lược-xử-lý-lỗi>
-+ #strong[Circuit Breaker Pattern]
-
-  - Ngăn chặn lỗi lan truyền khi dịch vụ xuống cấp
-  - Trạng thái: Đóng (bình thường), Mở (lỗi), Nửa-mở (thử lại)
-  - Thực hiện bởi các thư viện như Netflix Hystrix, Resilience4j
-  - Giúp hệ thống phân tán chống chịu lỗi tốt hơn
-
-+ #strong[Retry Pattern]
-
-  - Tự động thử lại thao tác thất bại
-  - Sử dụng giãn cách mũ (exponential backoff) để tránh quá tải
-  - Kết hợp với timeout để ngăn chặn chờ đợi vô hạn
-  - Hiệu quả cho lỗi tạm thời
-
-+ #strong[Timeout Pattern]
-
-  - Đặt giới hạn thời gian cho các cuộc gọi dịch vụ
-  - Ngăn chặn tài nguyên bị chặn vô thời hạn
-  - Cần thiết trong mọi giao tiếp dịch vụ từ xa
-  - Nên được đặt ở nhiều cấp
-
-+ #strong[Bulkhead Pattern]
-
-  - Cô lập các thành phần để ngăn chặn lỗi lan truyền
-  - Giống như các vách ngăn trên tàu để ngăn nước tràn vào
-  - Thực hiện bằng cách phân tách thread pool hoặc giới hạn kết nối
-  - Bảo vệ toàn bộ hệ thống khỏi lỗi của một thành phần
-
 == Khuyết điểm của microservices
 <khuyết-điểm-của-microservices>
+
 === Thách thức về độ phức tạp
 <thách-thức-về-độ-phức-tạp>
 + #strong[Độ phức tạp phân tán]
@@ -1884,7 +1841,7 @@ triển phần mềm.
   - Thời gian phát triển ban đầu dài hơn
   - Khó chứng minh ROI cho các ứng dụng nhỏ
   - Monolith có thể là lựa chọn tốt hơn
-+ #strong[Thiếu kinh nghiệm đội ngũ]
++ #strong[Đội ngũ thiếu kinh nghiệm]
   - Đội ngũ không quen với hệ thống phân tán
   - Thiếu kiến thức về DevOps và CI/CD
   - Không có kinh nghiệm với các mẫu thiết kế phân tán
@@ -1905,6 +1862,8 @@ Client truy vấn một service registry, nhận thông tin về các instance
 đang chạy, sau đó sử dụng thuật toán cân bằng tải để chọn ra instance
 phù hợp.
 
+#image("images/2025-03-07-22-07-26.png")
+
 #strong[Ưu điểm:]
 
 - Client có kiểm soát tốt hơn về thuật toán cân bằng tải
@@ -1924,6 +1883,8 @@ phù hợp.
 Trong mô hình này, client gửi yêu cầu đến một thành phần trung gian
 (load balancer hoặc router), thành phần này sẽ tìm kiếm service registry
 và chuyển tiếp yêu cầu đến instance thích hợp.
+
+#image("images/2025-03-07-22-08-02.png")
 
 #strong[Ưu điểm:]
 
@@ -1948,6 +1909,8 @@ Trong mô hình này, mỗi service instance tự chịu trách nhiệm đăng k
 thông tin của mình vào service registry khi khởi động và hủy đăng ký khi
 tắt.
 
+#image("images/2025-03-07-22-08-19.png")
+
 - #strong[Ưu điểm:]
   - Kiến trúc phi tập trung
   - Service chủ động quản lý vòng đời của mình
@@ -1964,6 +1927,8 @@ tắt.
 Trong mô hình này, một thành phần riêng biệt gọi là service registrar
 theo dõi các service instance và cập nhật thông tin vào service
 registry.
+
+#image("images/2025-03-07-22-08-27.png")
 
 #strong[Ưu điểm:]
 
@@ -3031,8 +2996,15 @@ hiện đại:
 <deploy-patterns>
 === Multiple instances per host
 <multiple-instances-per-host>
-- #strong[Định nghĩa];: Mô hình triển khai trong đó nhiều instance của
-  ứng dụng được chạy trên cùng một máy chủ vật lý hoặc máy ảo.
+#strong[Multiple Instances per Host] là mô hình triển khai trong đó
+#strong[nhiều phiên bản của một ứng dụng hoặc dịch vụ] chạy trên cùng
+một máy chủ vật lý hoặc máy ảo. Điều này giúp #strong[tận dụng tối đa
+tài nguyên];, #strong[giảm chi phí hạ tầng] và #strong[tăng hiệu quả sử
+dụng máy chủ];. Tuy nhiên, nó cũng đòi hỏi #strong[quản lý tài nguyên
+chặt chẽ] để tránh xung đột và quá tải hệ thống.
+
+#image("images/2025-03-07-22-24-02.png")
+
 - #strong[Ưu điểm];:
   - Tối ưu hóa việc sử dụng tài nguyên phần cứng
   - Giảm chi phí hạ tầng
@@ -3049,8 +3021,13 @@ hiện đại:
 
 === Single instance per host
 <single-instance-per-host>
-- #strong[Định nghĩa];: Mô hình triển khai trong đó mỗi máy chủ vật lý
-  hoặc máy ảo chỉ chạy một instance của ứng dụng.
+#strong[Single Instance per Host] là mô hình triển khai trong đó
+#strong[mỗi máy chủ chỉ chạy một phiên bản của ứng dụng hoặc dịch vụ];.
+Điều này giúp #strong[cách ly tài nguyên];, #strong[cải thiện hiệu suất
+và độ ổn định];, đồng thời #strong[giảm rủi ro xung đột] giữa các ứng
+dụng. Tuy nhiên, mô hình này có thể #strong[tốn nhiều tài nguyên hơn] so
+với chạy nhiều phiên bản trên cùng một máy chủ.
+
 - #strong[Ưu điểm];:
   - Cô lập tài nguyên và quy trình xử lý
   - Tăng tính bảo mật và ổn định
@@ -3068,8 +3045,16 @@ hiện đại:
 <containerization>
 === Docker
 <docker>
-- #strong[Tổng quan];: Nền tảng containerization mã nguồn mở giúp tự
-  động hóa việc triển khai ứng dụng trong các container nhẹ, di động.
+
+#strong[Docker] là một nền tảng #strong[ảo hóa cấp độ hệ điều hành] giúp
+đóng gói ứng dụng và các phụ thuộc của nó vào một #strong[container];.
+Container này có thể chạy nhất quán trên nhiều môi trường khác nhau, từ
+máy tính cá nhân đến máy chủ và đám mây. Docker giúp #strong[tối ưu hóa
+việc triển khai, tăng tính di động, giảm xung đột môi trường và cải
+thiện hiệu suất] trong việc phát triển và vận hành phần mềm.
+
+#image("images/2025-03-07-22-22-49.png")
+
 - #strong[Thành phần chính];:
   - #strong[Docker Engine];: Runtime để tạo và quản lý container
   - #strong[Docker Image];: Template chỉ đọc chứa mã nguồn, thư viện,
@@ -3099,8 +3084,14 @@ hiện đại:
 
 === Podman
 <podman>
-- #strong[Tổng quan];: Giải pháp container daemonless, không yêu cầu đặc
-  quyền root, tương thích với Docker.
+#strong[Podman] là một công cụ quản lý container mã nguồn mở, tương tự
+như Docker, nhưng không yêu cầu #strong[daemon] chạy nền. Nó hỗ trợ
+#strong[chạy, xây dựng và quản lý container] theo chuẩn OCI (Open
+Container Initiative). Podman có thể chạy container #strong[không cần
+quyền root];, giúp #strong[tăng cường bảo mật];. Ngoài ra, nó có thể
+thay thế Docker trong nhiều trường hợp mà không cần thay đổi quá nhiều
+về workflow.
+
 - #strong[Đặc điểm nổi bật];:
   - Kiến trúc không daemon (daemonless)
   - Mô hình bảo mật tốt hơn với khả năng chạy dưới quyền người dùng
@@ -3128,8 +3119,18 @@ hiện đại:
 <kubernetes--helm>
 ==== Kubernetes
 <kubernetes>
-- #strong[Tổng quan];: Nền tảng mã nguồn mở để tự động hóa việc triển
-  khai, mở rộng và quản lý các ứng dụng container.
+#strong[Kubernetes] là một nền tảng #strong[orchestration] mã nguồn mở
+dùng để #strong[tự động triển khai, mở rộng và quản lý] các ứng dụng
+container. Nó giúp quản lý #strong[các container] trên một cụm máy chủ,
+cung cấp các tính năng như #strong[cân bằng tải, tự động phục hồi,
+scaling linh hoạt] và #strong[quản lý cấu hình];. Kubernetes cho phép
+ứng dụng chạy ổn định, dễ dàng mở rộng và tối ưu hóa tài nguyên trong
+môi trường #strong[cloud-native];.
+
+#align(center)[
+  #image("images/2025-03-07-22-29-48.png", width: 5cm)
+]
+
 - #strong[Kiến trúc];:
   - #strong[Control Plane];:
     - #strong[API Server];: Giao diện để tương tác với cluster
@@ -3166,8 +3167,18 @@ hiện đại:
 
 ==== Helm
 <helm>
-- #strong[Tổng quan];: Quản lý gói (package manager) cho Kubernetes,
-  giúp định nghĩa, cài đặt và nâng cấp ứng dụng Kubernetes.
+#strong[Helm] là một trình quản lý package dành cho #strong[Kubernetes];,
+giúp tự động hóa việc #strong[triển khai, quản lý và cập nhật] ứng dụng
+dưới dạng #strong[biểu đồ (Helm Charts)];. Nó cho phép định nghĩa, cài
+đặt và quản lý các ứng dụng Kubernetes một cách #strong[dễ dàng, có thể
+tái sử dụng và có thể cấu hình linh hoạt];. Helm giúp đơn giản hóa quá
+trình triển khai ứng dụng phức tạp, hỗ trợ #strong[rollbacks,
+versioning] và quản lý #strong[dependencies] trong Kubernetes.
+
+#align(center)[
+  #image("images/2025-03-07-22-27-44.png", width: 5cm)
+]
+
 - #strong[Thành phần chính];:
   - #strong[Chart];: Gói các tài nguyên Kubernetes liên quan
   - #strong[Repository];: Nơi lưu trữ và chia sẻ charts
@@ -3205,8 +3216,13 @@ hiện đại:
 <infrastructure--configuration-management>
 === Infrastructure as Code (IaC)
 <infrastructure-as-code-iac>
-- #strong[Định nghĩa];: Quản lý và cung cấp hạ tầng thông qua mã nguồn
-  thay vì quy trình thủ công.
+#strong[Infrastructure as Code (IaC)] là phương pháp quản lý và cung cấp
+#strong[hạ tầng IT] bằng cách sử dụng #strong[các tập tin cấu hình hoặc
+mã nguồn];, thay vì cấu hình thủ công. IaC giúp #strong[tự động hóa,
+tăng tính nhất quán, giảm lỗi con người và cải thiện khả năng mở rộng];.
+Các công cụ phổ biến như #strong[Terraform, Ansible, CloudFormation] cho
+phép định nghĩa hạ tầng dưới dạng #strong[code];, giúp dễ dàng kiểm soát
+phiên bản, tái sử dụng và triển khai trên nhiều môi trường.
 - #strong[Công cụ phổ biến];:
   - #strong[Terraform];:
     - Công cụ mã nguồn mở, ngôn ngữ HCL
@@ -3318,8 +3334,18 @@ hiện đại:
 
 == Consul
 <consul>
-- #strong[Tổng quan];: Giải pháp service mesh và phát hiện dịch vụ phân
-  tán do HashiCorp phát triển.
+#strong[Consul] là một công cụ #strong[service mesh] và #strong[quản lý
+dịch vụ phân tán];, giúp thực hiện #strong[service discovery, cấu hình,
+quản lý key-value và bảo mật] trong hệ thống microservices. Nó hỗ trợ
+#strong[quản lý trạng thái dịch vụ, cân bằng tải, giám sát sức khỏe
+(health checks)] và cung cấp #strong[mạng zero-trust với service mesh];.
+Consul có thể chạy trên nhiều môi trường, từ #strong[on-premises] đến
+#strong[cloud];, giúp các dịch vụ giao tiếp an toàn và hiệu quả.
+
+#align(center)[
+  #image("images/2025-03-07-22-32-03.png", width: 5cm)
+]
+
 - #strong[Tính năng chính];:
   - #strong[Service Discovery];: Đăng ký và khám phá dịch vụ tự động
   - #strong[Health Checking];: Kiểm tra sức khỏe dịch vụ liên tục
@@ -3381,6 +3407,9 @@ hiện đại:
 <grafana>
 - #strong[Tổng quan];: Nền tảng phân tích và trực quan hóa dữ liệu mã
   nguồn mở, đặc biệt mạnh mẽ với dữ liệu time-series.
+
+#image("images/2025-03-07-22-37-24.png")
+
 - #strong[Tính năng chính];:
   - #strong[Dashboards];: Giao diện trực quan với nhiều loại biểu đồ
   - #strong[Data sources];: Hỗ trợ nhiều nguồn dữ liệu (Prometheus,
@@ -3545,6 +3574,9 @@ hiện đại:
 <elk-stack>
 ELK Stack là một bộ công cụ mã nguồn mở gồm ba thành phần chính: Elasticsearch, Logstash và Kibana,
 được sử dụng để thu thập, xử lý, lưu trữ và phân tích dữ liệu log theo thời gian thực. 
+
+#image("images/2025-03-07-22-36-34.png")
+
 - #strong[Thành phần];:
   - #strong[Elasticsearch];: Công cụ tìm kiếm và phân tích phân tán
   - #strong[Logstash];: Xử lý và chuyển đổi dữ liệu log
@@ -3649,9 +3681,17 @@ thể và gửi trực tiếp đến Elasticsearch hoặc thông qua Logstash.
 <opentelemetry--jaeger>
 ==== OpenTelemetry
 <opentelemetry>
-OpenTelemetry là dự án nguồn mở cung cấp bộ API, thư viện và agent tiêu
-chuẩn để thu thập dữ liệu telemetry (log, metrics, traces) từ ứng dụng
-và cơ sở hạ tầng.
+#strong[OpenTelemetry] là một bộ công cụ #strong[mã nguồn mở] dùng để
+thu thập, xử lý và xuất dữ liệu #strong[quan sát (Observability)] từ các
+ứng dụng, bao gồm #strong[logs, metrics và traces];. Nó giúp theo dõi
+hiệu suất hệ thống, phát hiện lỗi và cải thiện khả năng quan sát trong
+môi trường #strong[phân tán và microservices];. OpenTelemetry hỗ trợ
+nhiều nền tảng, tích hợp với các hệ thống giám sát như
+#strong[Prometheus, Jaeger, Grafana] và là tiêu chuẩn phổ biến trong
+việc theo dõi ứng dụng hiện đại.
+
+
+#image("images/2025-03-07-22-34-57.png")
 
 #strong[Thành phần chính:]
 
@@ -3688,6 +3728,8 @@ và cơ sở hạ tầng.
 <jaeger>
 Jaeger là hệ thống tracing phân tán mã nguồn mở, được tạo ra bởi Uber và
 hiện là dự án tốt nghiệp của Cloud Native Computing Foundation (CNCF).
+
+#image("images/2025-03-07-22-35-28.png")
 
 #strong[Kiến trúc:]
 
@@ -4183,6 +4225,8 @@ Martin (Uncle Bob). Mục tiêu chính là tạo ra các hệ thống:
   hưởng logic nghiệp vụ
 - #strong[Độc lập với bất kỳ thành phần bên ngoài nào]
 
+#image("images/2025-03-07-22-38-13.png")
+
 Clean Architecture trong .NET Core thường được tổ chức thành các lớp
 đồng tâm:
 
@@ -4375,6 +4419,8 @@ Nguyên tắc cơ bản:
   lập càng nhiều càng tốt
 - #strong[Tách biệt mối quan tâm kỹ thuật trong phạm vi slice];: Mỗi
   slice chịu trách nhiệm về mọi khía cạnh của tính năng
+
+#image("images/2025-03-07-22-38-38.png")
 
 Trong .NET Core, VSA thường được triển khai bằng cách sử dụng thư viện
 MediatR và CQRS (Command Query Responsibility Segregation):
