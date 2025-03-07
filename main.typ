@@ -215,24 +215,24 @@ Tính nhất quán là thuộc tính của hệ thống đảm bảo rằng tấ
 
 ==== Các mô hình tính nhất quán
 
-+ **Tính nhất quán mạnh (Strong Consistency)**
++ *Tính nhất quán mạnh (Strong Consistency)*
   - Đảm bảo tất cả các nút đều thấy dữ liệu mới nhất sau khi cập nhật
   - Thường đạt được thông qua các giao thức đồng thuận hoặc cơ chế khóa
   - Ưu điểm: Đơn giản hóa lập trình, dữ liệu luôn nhất quán
   - Nhược điểm: Giảm tính khả dụng, tăng độ trễ giao dịch
 
-+ **Tính nhất quán cuối cùng (Eventual Consistency)**
++ *Tính nhất quán cuối cùng (Eventual Consistency)*
   - Đảm bảo rằng nếu không có cập nhật mới, cuối cùng tất cả các bản sao sẽ hội tụ về cùng một giá trị
   - Cho phép bất đồng bộ tạm thời giữa các bản sao
   - Ưu điểm: Độ trễ thấp, tính khả dụng cao
   - Nhược điểm: Phức tạp trong xử lý xung đột, có thể trả về dữ liệu cũ
 
-+ **Tính nhất quán nhân quả (Causal Consistency)**
++ *Tính nhất quán nhân quả (Causal Consistency)*
   - Đảm bảo các hoạt động có liên quan nhân quả được thấy theo đúng thứ tự
   - Các hoạt động không liên quan có thể được thấy theo thứ tự khác nhau
   - Cân bằng giữa tính nhất quán mạnh và tính nhất quán cuối cùng
 
-+ **Tính nhất quán phiên (Session Consistency)**
++ *Tính nhất quán phiên (Session Consistency)*
   - Đảm bảo tính nhất quán trong phạm vi một phiên làm việc
   - Người dùng luôn thấy dữ liệu của riêng họ một cách nhất quán
   - Hữu ích cho ứng dụng tương tác người dùng
@@ -241,9 +241,9 @@ Tính nhất quán là thuộc tính của hệ thống đảm bảo rằng tấ
 
 Định lý CAP (do Eric Brewer đề xuất) tuyên bố rằng trong một hệ thống phân tán, không thể đồng thời đảm bảo cả ba thuộc tính sau:
 
-+ **Tính Nhất Quán (Consistency)**: Tất cả các nút thấy cùng dữ liệu tại cùng thời điểm
-+ **Tính Khả Dụng (Availability)**: Mỗi yêu cầu đều nhận được phản hồi
-+ **Khả Năng Chịu Phân Vùng (Partition Tolerance)**: Hệ thống tiếp tục hoạt động khi có phân vùng mạng
++ *Tính Nhất Quán (Consistency)*: Tất cả các nút thấy cùng dữ liệu tại cùng thời điểm
++ *Tính Khả Dụng (Availability)*: Mỗi yêu cầu đều nhận được phản hồi
++ *Khả Năng Chịu Phân Vùng (Partition Tolerance)*: Hệ thống tiếp tục hoạt động khi có phân vùng mạng
 
 Trong thực tế, do không thể tránh khỏi phân vùng mạng trong hệ thống phân tán, hầu hết các hệ thống phải đánh đổi giữa tính nhất quán và tính khả dụng.
 
@@ -253,64 +253,64 @@ Khả năng chống chịu lỗi là khả năng hệ thống tiếp tục hoạ
 
 ===== Các Loại Lỗi
 
-+ **Lỗi Sự Cố (Crash Failures)**
++ *Lỗi Sự Cố (Crash Failures)*
   - Nút đột ngột ngừng hoạt động hoặc khởi động lại
   - Dễ phát hiện và xử lý nhất
   - Giải pháp: Dự phòng, tự động khởi động lại
 
-+ **Lỗi Thời Gian (Timing Failures)**
++ *Lỗi Thời Gian (Timing Failures)*
   - Nút phản hồi quá chậm hoặc quá nhanh
   - Có thể do mạng không ổn định hoặc quá tải
   - Giải pháp: Cơ chế timeout, thử lại
 
-+ **Lỗi Phản Hồi (Response Failures)**
++ *Lỗi Phản Hồi (Response Failures)*
   - Nút trả về giá trị không chính xác
   - Có thể do bug phần mềm hoặc dữ liệu hỏng
   - Giải pháp: Kiểm tra tính hợp lệ, mã hóa lỗi
 
-+ **Lỗi Byzantine (Byzantine Failures)**
++ *Lỗi Byzantine (Byzantine Failures)*
   - Nút hoạt động không thể dự đoán, có thể độc hại
   - Loại lỗi phức tạp nhất để xử lý
   - Được thảo luận chi tiết ở phần sau
 
 ===== Cơ Chế Chống Chịu Lỗi
 
-+ **Dự Phòng (Redundancy)**
++ *Dự Phòng (Redundancy)*
   - Dự phòng thông tin: Mã sửa lỗi, kiểm tra tổng
   - Dự phòng thời gian: Thử lại, thời gian chờ thích ứng
   - Dự phòng vật lý: Nhiều bản sao phần cứng
 
-+ **Sao Chép (Replication)**
++ *Sao Chép (Replication)*
   - Duy trì nhiều bản sao dữ liệu trên các nút khác nhau
   - Có thể là sao chép đồng bộ hoặc bất đồng bộ
   - Phương pháp: Primary-Secondary, Multi-Primary, Quorum
 
-+ **Phát Hiện Lỗi (Failure Detection)**
++ *Phát Hiện Lỗi (Failure Detection)*
   - Cơ chế heartbeat: Kiểm tra định kỳ tình trạng nút
   - Hệ thống giám sát phân tán
   - Đánh giá tình trạng dựa trên nhiều nguồn
 
-+ **Khôi Phục Lỗi (Failure Recovery)**
++ *Khôi Phục Lỗi (Failure Recovery)*
   - Khôi phục trạng thái từ snapshot hoặc log
   - Tự động khởi động lại dịch vụ
   - Failover tự động sang nút dự phòng
 
 ===== Kỹ Thuật Thiết Kế Chống Chịu Lỗi
 
-+ **Phân Vùng Lỗi (Failure Domains)**
++ *Phân Vùng Lỗi (Failure Domains)*
   - Cô lập các thành phần để lỗi không lan truyền
   - Sử dụng nhiều vùng hoặc khu vực
 
-+ **Circuit Breaker Pattern**
++ *Circuit Breaker Pattern*
   - Ngăn chặn gọi đến dịch vụ đã biết là bị lỗi
   - Cho phép hệ thống tự phục hồi
   - Ngăn chặn lỗi dây chuyền
 
-+ **Bulkhead Pattern**
++ *Bulkhead Pattern*
   - Cô lập tài nguyên cho các người dùng hoặc dịch vụ khác nhau
   - Đảm bảo lỗi không ảnh hưởng đến toàn bộ hệ thống
 
-+ **Timeout và Retry Strategies**
++ *Timeout và Retry Strategies*
   - Thiết lập thời gian chờ hợp lý
   - Chiến lược thử lại với backoff
   - Tránh thundering herd problem
@@ -331,61 +331,61 @@ Thách thức là làm thế nào để các tướng trung thành đạt đư�
 
 ===== Đặc Điểm của Lỗi Byzantine
 
-+ **Không Giới Hạn Hành Vi**
++ *Không Giới Hạn Hành Vi*
   - Có thể gửi thông điệp mâu thuẫn đến các nút khác nhau
   - Có thể cố tình trì hoãn hoặc sửa đổi thông điệp
   - Có thể phối hợp với các nút độc hại khác
 
-+ **Khó Phát Hiện**
++ *Khó Phát Hiện*
   - Không thể dễ dàng phân biệt nút Byzantine với nút bình thường
   - Có thể hoạt động bình thường trong một thời gian trước khi gây ra lỗi
   - Có thể thay đổi hành vi để tránh phát hiện
 
-+ **Tác Động Nghiêm Trọng**
++ *Tác Động Nghiêm Trọng*
   - Có thể phá vỡ tính nhất quán của toàn bộ hệ thống
   - Có thể dẫn đến hành vi không xác định
   - Đặc biệt nguy hiểm trong các hệ thống tài chính, quân sự, y tế
 
 ===== Giao Thức Đồng Thuận Byzantine
 
-+ **PBFT (Practical Byzantine Fault Tolerance)**
++ *PBFT (Practical Byzantine Fault Tolerance)*
   - Được phát triển bởi Miguel Castro và Barbara Liskov (1999)
   - Có thể chịu đựng đến f nút Byzantine trong hệ thống có 3f+1 nút
   - Sử dụng quy trình 3 giai đoạn: pre-prepare, prepare, commit
   - Hiệu quả hơn các giải pháp trước đó, nhưng vẫn có chi phí giao tiếp cao
 
-+ **Tendermint**
++ *Tendermint*
   - Biến thể của PBFT được sử dụng trong blockchain
   - Sử dụng cơ chế đặt cược (staking) làm cơ chế khuyến khích
   - Cung cấp tính chất giao dịch chung cuộc (finality)
 
-+ **HoneyBadgerBFT**
++ *HoneyBadgerBFT*
   - Giao thức đồng thuận không đồng bộ
   - Không phụ thuộc vào giả định thời gian
   - Phù hợp cho môi trường Internet với độ trễ không đoán trước
 
-+ **Proof of Work (PoW)**
++ *Proof of Work (PoW)*
   - Sử dụng trong Bitcoin và nhiều blockchain khác
   - Dựa trên công việc tính toán thay vì giao tiếp
   - Cung cấp khả năng chống chịu Byzantine trong môi trường mở
 
 ===== Ứng Dụng của Khả Năng Chịu Lỗi Byzantine
 
-+ **Blockchain và Cryptocurrency**
++ *Blockchain và Cryptocurrency*
   - Bitcoin, Ethereum và các dự án blockchain khác
   - Môi trường phi tập trung với các tác nhân không đáng tin cậy
   - Kinh tế học token như cơ chế khuyến khích
 
-+ **Hệ Thống Quan Trọng**
++ *Hệ Thống Quan Trọng*
   - Hệ thống kiểm soát không lưu
   - Hệ thống tài chính phân tán
   - Hệ thống quân sự và an ninh quốc gia
 
-+ **Điện Toán Đám Mây Đa Nhà Cung Cấp**
++ *Điện Toán Đám Mây Đa Nhà Cung Cấp*
   - Đảm bảo dữ liệu nhất quán giữa các nhà cung cấp cloud
   - Bảo vệ chống lại các nhà cung cấp độc hại tiềm ẩn
 
-+ **Internet of Things (IoT)**
++ *Internet of Things (IoT)*
   - Bảo vệ hệ thống IoT khỏi thiết bị bị xâm nhập
   - Đảm bảo tính toàn vẹn dữ liệu từ các cảm biến
   - Hỗ trợ hệ thống tự động phân tán
