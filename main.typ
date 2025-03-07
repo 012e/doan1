@@ -6,9 +6,16 @@
 
 #show: codly-init.with()
 #codly(languages: codly-languages, zebra-fill: none, stroke: black + 1pt)
-#show raw: set text(font: "JetBrains Mono") 
+#show raw: set text(font: "JetBrains Mono", size: 10pt) 
+
+#set table(
+  fill: (x, y) =>
+    if y == 0 { luma(240) }
+    else if x == 0{ luma(250) },
+)
 
 #show table.cell.where(y: 0): strong
+
 #set table(align: left + horizon)
 
 #let version = raw(read("version.txt"))
@@ -53,11 +60,11 @@
 
 
 #pagebreak()
-
 #show outline.entry.where(level: 1): it => {
   set text(size: 14pt, weight: "bold")
   set block(above: 1em)
-  [#link(it.element.location())[Chương #it.prefix() #it.inner()]
+  [#text(size: 14pt)[
+    #link(it.element.location())[Chương #it.prefix() #it.inner()]]
   ]
 }
 
@@ -1190,15 +1197,215 @@ public class UserService {
 
 === Write-through
 <write-through>
-Write-through là một pattern caching trong đó dữ liệu được ghi vào cả
-cache và nguồn dữ liệu chính (database) trong cùng một giao dịch.
+Write-through là một pattern caching trong đó mọi thao tác ghi dữ liệu
+được thực hiện đồng thời vào cache và hệ thống lưu trữ chính.
 
 #strong[Cách hoạt động:]
 
 + Ứng dụng ghi dữ liệu vào cache
-+ Cache ngay lập tức ghi dữ liệu vào nguồn dữ
++ Cache ngay lập tức ghi dữ liệu này vào hệ thống lưu trữ chính
+  (database)
++ Thao tác ghi chỉ được coi là hoàn tất khi cả hai quá trình ghi đều
+  thành công
++ Cache và hệ thống lưu trữ chính luôn đồng bộ với nhau
 
-=== Write-back (Write-behind)
+#strong[Ưu điểm:]
+
+- Đảm bảo tính nhất quán cao giữa cache và hệ thống lưu trữ chính
+- Giảm thiểu nguy cơ mất dữ liệu khi cache gặp sự cố
+- Đơn giản hóa quy trình khôi phục sau sự cố
+- Phù hợp với các ứng dụng yêu cầu độ tin cậy cao về dữ liệu
+- Không cần cơ chế xử lý dữ liệu bẩn (dirty data) phức tạp
+- Hiệu quả trong hệ thống có tỷ lệ đọc cao hơn tỷ lệ ghi
+
+#strong[Nhược điểm:]
+
+- Hiệu suất ghi chậm hơn do phải chờ cả hai thao tác ghi hoàn tất
+- Tăng độ trễ cho các thao tác ghi
+- Phụ thuộc vào hiệu suất và độ tin cậy của hệ thống lưu trữ chính
+- Tạo gánh nặng lớn cho database khi có nhiều thao tác ghi
+- Không tối ưu cho các ứng dụng có tỷ lệ ghi cao
+
+#strong[Trường hợp sử dụng:]
+
+- Hệ thống tài chính hoặc ngân hàng yêu cầu độ tin cậy dữ liệu cao
+- Ứng dụng không thể chấp nhận sự không nhất quán dữ liệu tạm thời
+- Môi trường có khả năng khôi phục sau sự cố cao
+- Hệ thống có tỷ lệ ghi thấp nhưng tỷ lệ đọc cao
+- Khi việc mất dữ liệu được coi là không thể chấp nhận
+
+#strong[Công nghệ/Framework hỗ trợ:]
+
+- Ehcache với CacheWriters
+- JCache (JSR-107) với CacheWriters
+- Redis với cơ chế AOF (Append-Only File)
+- Oracle Coherence với CacheStore
+- Hazelcast với MapStore
+- Spring Cache với hỗ trợ CacheWriter
+- AWS ElastiCache với cấu hình đồng bộ hóa
+
+#strong[Mã ví dụ (Java với Spring):]
+
+```java
+@Component
+public class UserCacheWriter implements CacheWriter<String, User> {
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Override
+    public void write(String key, User value) {
+        // Lưu dữ liệu vào database
+        userRepository.save(value);
+    }
+    
+    @Override
+    public void delete(String key) {
+        userRepository.deleteById(key);
+    }
+}
+
+// Cấu hình cache
+@Bean
+public CacheManager cacheManager(UserCacheWriter userCacheWriter) {
+    CaffeineCacheManager cacheManager = new CaffeineCacheManager("users");
+    cacheManager.setCacheWriter(userCacheWriter);
+    cacheManager.setWriteThrough(true);
+    return cacheManager;
+}
+
+// Sử dụng trong dịch vụ
+@Service
+public class UserService {
+    @Autowired
+    private CacheManager cacheManager;
+    
+    public void updateUser(User user) {
+        // Dữ liệu sẽ được ghi đồng thời vào cache và database
+        Cache cache = cacheManager.getCache("users");
+        cache.put(user.getId(), user);
+    }
+}
+```
+
+=== Write-back
+<write-back>
+Write-back là một pattern caching trong đó thao tác ghi chỉ được thực
+hiện vào cache trước, sau đó mới được ghi vào hệ thống lưu trữ chính
+theo lịch trình hoặc điều kiện nhất định.
+
+#strong[Cách hoạt động:]
+
++ Ứng dụng ghi dữ liệu vào cache
++ Cache đánh dấu dữ liệu là \"bẩn\" (dirty)
++ Thao tác ghi vào hệ thống lưu trữ chính được hoãn lại
++ Dữ liệu được ghi vào hệ thống lưu trữ chính theo:
+  - Khoảng thời gian định kỳ
+  - Số lượng mục bẩn vượt ngưỡng
+  - Khi cache đầy và cần giải phóng
+  - Khi cache shutdown hoặc theo yêu cầu đặc biệt
+
+#strong[Ưu điểm:]
+
+- Hiệu suất ghi nhanh hơn vì không phải chờ ghi vào hệ thống lưu trữ
+  chính
+- Giảm đáng kể tải cho database với mô hình ghi bùng nổ
+- Tối ưu băng thông mạng và tài nguyên database
+- Gom nhóm nhiều thao tác ghi thành các batch hiệu quả
+- Hoạt động tốt trong môi trường có tỷ lệ ghi cao
+- Tăng thông lượng ghi tổng thể của hệ thống
+
+#strong[Nhược điểm:]
+
+- Rủi ro mất dữ liệu nếu cache gặp sự cố trước khi ghi vào database
+- Phức tạp hơn trong triển khai và quản lý
+- Có thể gây ra dữ liệu không nhất quán tạm thời
+- Cần cơ chế quản lý dữ liệu \"bẩn\" (dirty data)
+- Phức tạp hơn khi khôi phục sau sự cố
+- Khó khăn trong đảm bảo tính nhất quán dữ liệu trong hệ thống phân tán
+
+#strong[Trường hợp sử dụng:]
+
+- Ứng dụng có tỷ lệ ghi cao
+- Hệ thống phân tích dữ liệu thời gian thực
+- Các ứng dụng IoT với dữ liệu sensor tần suất cao
+- Hệ thống xử lý log và metrics
+- Khi hiệu suất ghi quan trọng hơn tính nhất quán tức thời
+- Môi trường có thể chấp nhận mất dữ liệu ở mức độ nhất định
+
+#strong[Công nghệ/Framework hỗ trợ:]
+
+- Ehcache với write-behind configuration
+- Hazelcast với MapStore và write-delay
+- Oracle Coherence với write-behind CacheStore
+- Redis với Lua scripts hoặc modules tùy chỉnh
+- Apache Ignite với CacheWriteBehindStore
+- Spring Cache với triển khai tùy chỉnh
+- Microsoft AppFabric Caching với write-behind strategy
+
+#strong[Mã ví dụ (Java với Hazelcast):]
+
+```java
+@Configuration
+public class CacheConfig {
+    @Bean
+    public Config hazelcastConfig() {
+        Config config = new Config();
+        MapConfig mapConfig = new MapConfig("users");
+        
+        // Cấu hình write-behind
+        MapStoreConfig mapStoreConfig = new MapStoreConfig();
+        mapStoreConfig.setImplementation(new UserMapStore());
+        mapStoreConfig.setWriteDelaySeconds(5); // Hoãn ghi 5 giây
+        mapStoreConfig.setWriteBatchSize(100);  // Gom 100 thao tác ghi
+        mapStoreConfig.setWriteCoalescing(true); // Gộp các thao tác ghi trên cùng khóa
+        mapStoreConfig.setEnabled(true);
+        mapStoreConfig.setWriteBehindEnabled(true);
+        
+        mapConfig.setMapStoreConfig(mapStoreConfig);
+        config.addMapConfig(mapConfig);
+        
+        return config;
+    }
+}
+
+// MapStore implementation
+public class UserMapStore implements MapStore<String, User> {
+    private UserRepository userRepository;
+    
+    public UserMapStore() {
+        // Khởi tạo repository
+        this.userRepository = SpringContextHolder.getBean(UserRepository.class);
+    }
+    
+    @Override
+    public void store(String key, User value) {
+        // Được gọi khi write-behind được kích hoạt
+        userRepository.save(value);
+    }
+    
+    @Override
+    public void storeAll(Map<String, User> map) {
+        // Xử lý ghi batch
+        userRepository.saveAll(map.values());
+    }
+    
+    // Các phương thức khác của MapStore...
+}
+
+// Sử dụng trong dịch vụ
+@Service
+public class UserService {
+    @Autowired
+    private HazelcastInstance hazelcastInstance;
+    
+    public void updateUser(User user) {
+        // Dữ liệu chỉ được ghi vào cache trước
+        IMap<String, User> userMap = hazelcastInstance.getMap("users");
+        userMap.put(user.getId(), user);
+        // Write-behind sẽ tự động ghi vào database sau
+    }
+}
+```
 
 = Microservices
 <microservices>
