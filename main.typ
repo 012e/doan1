@@ -82,9 +82,111 @@
   [Chương #counter(heading).at(here()).at(0). ] + it.body
 }
 
-= Tổng quan về thiết kế hệ thống
+= Tổng quan về Thiết kế Hệ thống
 
-== Thiết kế các hệ thống nhỏ và trong các hệ thống lớn
+== Thiết kế trong các hệ thống nhỏ và trong các hệ thống lớn
+
+=== Kiến trúc phần mềm quy mô nhỏ
+<kiến-trúc-phần-mềm-quy-mô-nhỏ>
+
+==== Đặc điểm chính
+<đặc-điểm-chính>
+Kiến trúc phần mềm quy mô nhỏ thường có cấu trúc đơn giản và trực tiếp.
+Các hệ thống này thường được thiết kế cho một mục đích cụ thể với số
+lượng người dùng và chức năng hạn chế. Phạm vi của các phần mềm này
+thường được định nghĩa rõ ràng và ít có sự thay đổi.
+
+==== Mô hình kiến trúc phổ biến
+<mô-hình-kiến-trúc-phổ-biến>
+Các ứng dụng nhỏ thường áp dụng các mô hình đơn giản như kiến trúc
+monolithic, MVC (Model-View-Controller), hoặc kiến trúc hai tầng
+(client-server). Các mô hình này dễ triển khai và quản lý với chi phí
+thấp.
+
+==== Quy trình phát triển
+<quy-trình-phát-triển>
+Phát triển phần mềm quy mô nhỏ thường linh hoạt hơn, cho phép thử nghiệm
+và triển khai nhanh chóng. Một nhóm nhỏ các nhà phát triển có thể quản
+lý toàn bộ codebase, và việc giao tiếp giữa các thành viên dễ dàng hơn.
+
+==== Quản lý dữ liệu
+<quản-lý-dữ-liệu>
+Hệ thống dữ liệu thường đơn giản, sử dụng một cơ sở dữ liệu duy nhất
+hoặc thậm chí lưu trữ dữ liệu cục bộ. Lưu lượng dữ liệu thường thấp và
+có thể quản lý bằng các công cụ cơ bản.
+
+=== Kiến trúc phần mềm quy mô lớn
+<kiến-trúc-phần-mềm-quy-mô-lớn>
+==== Đặc điểm chính
+<đặc-điểm-chính-1>
+Kiến trúc phần mềm quy mô lớn được thiết kế để xử lý khối lượng công
+việc lớn, phục vụ số lượng người dùng đông đảo và cung cấp nhiều chức
+năng phức tạp. Các hệ thống này cần phải có khả năng mở rộng, độ tin cậy
+cao và khả năng phục hồi tốt.
+
+#image("images/2025-03-07-23-07-43.png")
+
+==== Mô hình kiến trúc phổ biến
+<mô-hình-kiến-trúc-phổ-biến-1>
+Hệ thống lớn thường áp dụng kiến trúc microservices, kiến trúc hướng sự
+kiện (event-driven), kiến trúc dựa trên domain (DDD), hoặc kiến trúc
+serverless. Các mô hình này cho phép mở rộng quy mô linh hoạt và phát
+triển độc lập các thành phần.
+
+==== Quy trình phát triển
+<quy-trình-phát-triển-1>
+Phát triển phần mềm quy mô lớn đòi hỏi quy trình chặt chẽ hơn, với các
+phương pháp DevOps, CI/CD, và kiểm thử tự động. Nhiều nhóm phát triển
+cùng làm việc trên các phần khác nhau của hệ thống, đòi hỏi sự phối hợp
+và tích hợp liên tục.
+
+==== Quản lý dữ liệu
+<quản-lý-dữ-liệu-1>
+Hệ thống dữ liệu phức tạp, thường sử dụng nhiều loại cơ sở dữ liệu (đa
+dạng hóa dữ liệu), phân chia dữ liệu (sharding), và caching phân tán.
+Các chiến lược sao lưu, phục hồi và bảo mật dữ liệu cần được thiết kế kỹ
+lưỡng.
+
+=== So sánh kiến trúc phần mềm quy mô nhỏ và lớn
+<so-sánh-kiến-trúc-phần-mềm-quy-mô-nhỏ-và-lớn>
+==== Độ phức tạp
+<độ-phức-tạp>
+- #strong[Hệ thống nhỏ];: Đơn giản, dễ hiểu và quản lý
+- #strong[Hệ thống lớn];: Phức tạp, đòi hỏi nhiều lớp trừu tượng và tư
+  duy hệ thống
+
+==== Khả năng mở rộng
+<khả-năng-mở-rộng>
+- #strong[Hệ thống nhỏ];: Khả năng mở rộng hạn chế, thường được thiết kế
+  cho một quy mô cụ thể
+- #strong[Hệ thống lớn];: Được thiết kế với khả năng mở rộng từ đầu, cho
+  phép tăng trưởng theo chiều ngang và chiều dọc
+
+==== Chi phí và nguồn lực
+<chi-phí-và-nguồn-lực>
+- #strong[Hệ thống nhỏ];: Chi phí thấp, cần ít nguồn lực hơn
+- #strong[Hệ thống lớn];: Chi phí cao hơn nhiều, đòi hỏi đầu tư lớn về
+  nhân lực và cơ sở hạ tầng
+
+==== Độ tin cậy và khả năng chịu lỗi
+<độ-tin-cậy-và-khả-năng-chịu-lỗi>
+- #strong[Hệ thống nhỏ];: Thường có ít cơ chế dự phòng, chịu lỗi đơn
+  giản
+- #strong[Hệ thống lớn];: Có nhiều cơ chế dự phòng, phân tán rủi ro, và
+  chiến lược phục hồi sau sự cố
+
+==== Thời gian phát triển
+<thời-gian-phát-triển>
+- #strong[Hệ thống nhỏ];: Chu kỳ phát triển ngắn, từ ý tưởng đến triển
+  khai nhanh chóng
+- #strong[Hệ thống lớn];: Chu kỳ phát triển dài hơn, đòi hỏi lập kế
+  hoạch và thiết kế kỹ lưỡng
+
+==== Bảo trì và cập nhật
+<bảo-trì-và-cập-nhật>
+- #strong[Hệ thống nhỏ];: Dễ dàng bảo trì và cập nhật
+- #strong[Hệ thống lớn];: Bảo trì và cập nhật phức tạp, đòi hỏi chiến
+  lược triển khai cẩn thận
 
 == Các nguyên lý thiết kế hệ thống
 
