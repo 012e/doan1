@@ -68,6 +68,10 @@
   ]
 }
 
+
+#include "thank.typ"
+#pagebreak()
+
 #outline(
   title: [
     #text([Mục lục], size: 30pt)
@@ -76,13 +80,18 @@
   depth: 4
 )
 #pagebreak()
+
 #set page(numbering: "1")
 
 #show heading.where(level: 1): it => {
   [Chương #counter(heading).at(here()).at(0). ] + it.body
 }
 
+#include "problem-statement.typ"
+#pagebreak()
+
 #include "introduction.typ"
+#include "load-balancer.typ"
 #include "load-balancer.typ"
 #include "caching.typ"
 #include "microservices.typ"
