@@ -1332,3 +1332,4 @@ dựng các hệ thống phức tạp, có khả năng mở rộng cao phục v�
 người dùng. Kết hợp với các thực hành phát triển và kiến trúc hiện đại,
 nó cho phép xây dựng các hệ thống doanh nghiệp lớn, đáng tin cậy và có
 khả năng phát triển.
+

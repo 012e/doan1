@@ -500,40 +500,78 @@ chịu trách nhiệm tải dữ liệu từ nguồn dữ liệu khi có cache m
 - Hazelcast với MapLoader/MapStore
 - Spring Cache với tích hợp CacheManager tùy chỉnh
 - AWS DynamoDB Accelerator (DAX)
+- ASP.NET với IMemoryCache và IDistributedCache
 
-#strong[Mã ví dụ (Java với Spring):]
+#strong[Mã ví dụ (C\# với `IMemoryCache`):]
 
-```java
-@Component
-public class UserCacheLoader implements CacheLoader<String, User> {
-    @Autowired
-    private UserRepository userRepository;
-    
-    @Override
-    public User load(String userId) {
-        // Cache tự động gọi phương thức này khi xảy ra cache miss
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+```cs
+// 1. User Entity (assuming this exists)
+public class User
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    // Other properties
+}
+
+// 2. UserRepository (assuming this exists and interacts with your database)
+public interface IUserRepository
+{
+    User FindById(string userId);
+}
+
+public class UserRepository : IUserRepository
+{
+    public User FindById(string userId)
+    {
+        // Simulate database lookup
+        Console.WriteLine($"Fetching user {userId} from database...");
+        if (userId == "user123")
+        {
+            return new User { Id = userId, Name = "John Doe" };
+        }
+        return null; // Or throw an exception if not found
     }
 }
 
-// Cấu hình cache
-@Bean
-public CacheManager cacheManager(UserCacheLoader userCacheLoader) {
-    CaffeineCacheManager cacheManager = new CaffeineCacheManager("users");
-    cacheManager.setCacheLoader(userCacheLoader);
-    return cacheManager;
-}
+// 3. UserService with Caching
+using Microsoft.Extensions.Caching.Memory;
+using System;
 
-// Sử dụng trong dịch vụ
-@Service
-public class UserService {
-    @Autowired
-    private CacheManager cacheManager;
-    
-    public User getUser(String userId) {
-        // Cache sẽ tự động tải từ database nếu cần
-        return cacheManager.getCache("users").get(userId, User.class);
+public class UserService
+{
+    private readonly IMemoryCache _cache;
+    private readonly IUserRepository _userRepository;
+    private readonly MemoryCacheEntryOptions _cacheEntryOptions;
+
+    public UserService(IMemoryCache cache, IUserRepository userRepository)
+    {
+        _cache = cache;
+        _userRepository = userRepository;
+
+        // Configure cache entry options (e.g., sliding expiration, absolute expiration)
+        _cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromMinutes(5)) // Cache item expires if not accessed for 5 minutes
+            .SetAbsoluteExpiration(TimeSpan.FromMinutes(30)); // Cache item expires after 30 minutes regardless of access
+    }
+
+    public User GetUser(string userId)
+    {
+        // The GetOrCreate method is similar to your CacheLoader's 'load' logic.
+        // It tries to get an item from the cache; if it doesn't exist,
+        // it executes the factory function to create/load it and then caches it.
+        return _cache.GetOrCreate(userId, entry =>
+        {
+            entry.SetOptions(_cacheEntryOptions); // Apply the configured options
+            Console.WriteLine($"Cache miss for user: {userId}. Loading from repository...");
+
+            var user = _userRepository.FindById(userId);
+            if (user == null)
+            {
+                // Similar to your orElseThrow, throw an exception if user not found
+                throw new InvalidOperationException($"User with ID '{userId}' not found.");
+            }
+            return user;
+        });
     }
 }
 ```
@@ -589,45 +627,110 @@ Write-through là một pattern caching trong đó mọi thao tác ghi dữ li�
 - Spring Cache với hỗ trợ CacheWriter
 - AWS ElastiCache với cấu hình đồng bộ hóa
 
-#strong[Mã ví dụ (Java với Spring):]
+#strong[Mã ví dụ (C\# với ASP.NET Core):]
 
-```java
-@Component
-public class UserCacheWriter implements CacheWriter<String, User> {
-    @Autowired
-    private UserRepository userRepository;
-    
-    @Override
-    public void write(String key, User value) {
-        // Lưu dữ liệu vào database
-        userRepository.save(value);
+```cs
+// 1. Thực thể User (Giả sử đã tồn tại)
+public class User
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    // Các thuộc tính khác của người dùng
+}
+
+// 2. UserRepository (Giả sử đã tồn tại và tương tác với cơ sở dữ liệu của bạn)
+public interface IUserRepository
+{
+    void Save(User user); // Để lưu/cập nhật người dùng
+    void DeleteById(string userId); // Để xóa người dùng theo ID
+    User FindById(string userId); // Thêm vào để đọc, nếu cần
+}
+
+public class UserRepository : IUserRepository
+{
+    public void Save(User user)
+    {
+        Console.WriteLine($"Đang lưu/cập nhật người dùng {user.Id} vào cơ sở dữ liệu...");
+        // Mô phỏng hoạt động lưu vào cơ sở dữ liệu
+        // Trong ứng dụng thực tế, bạn sẽ sử dụng ORM của mình (ví dụ: Entity Framework Core)
     }
-    
-    @Override
-    public void delete(String key) {
-        userRepository.deleteById(key);
+
+    public void DeleteById(string userId)
+    {
+        Console.WriteLine($"Đang xóa người dùng {userId} khỏi cơ sở dữ liệu...");
+        // Mô phỏng hoạt động xóa khỏi cơ sở dữ liệu
+    }
+
+    public User FindById(string userId)
+    {
+        // Mô phỏng tìm kiếm trong cơ sở dữ liệu
+        Console.WriteLine($"Đang tìm nạp người dùng {userId} từ cơ sở dữ liệu để đọc...");
+        if (userId == "user123")
+        {
+            return new User { Id = userId, Name = "Nguyễn Văn A" };
+        }
+        return null;
     }
 }
 
-// Cấu hình cache
-@Bean
-public CacheManager cacheManager(UserCacheWriter userCacheWriter) {
-    CaffeineCacheManager cacheManager = new CaffeineCacheManager("users");
-    cacheManager.setCacheWriter(userCacheWriter);
-    cacheManager.setWriteThrough(true);
-    return cacheManager;
-}
+// 3. UserService với cơ chế ghi xuyên qua (Explicit Write-Through Caching)
+using Microsoft.Extensions.Caching.Memory;
+using System;
 
-// Sử dụng trong dịch vụ
-@Service
-public class UserService {
-    @Autowired
-    private CacheManager cacheManager;
-    
-    public void updateUser(User user) {
-        // Dữ liệu sẽ được ghi đồng thời vào cache và database
-        Cache cache = cacheManager.getCache("users");
-        cache.put(user.getId(), user);
+public class UserService
+{
+    private readonly IMemoryCache _cache;
+    private readonly IUserRepository _userRepository;
+    private readonly MemoryCacheEntryOptions _cacheEntryOptions; // Tùy chọn: để thiết lập thời gian hết hạn cho cache khi ghi
+
+    public UserService(IMemoryCache cache, IUserRepository userRepository)
+    {
+        _cache = cache;
+        _userRepository = userRepository;
+        _cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromMinutes(5)) // Mục cache hết hạn nếu không được truy cập trong 5 phút
+            .SetAbsoluteExpiration(TimeSpan.FromMinutes(30)); // Mục cache hết hạn sau 30 phút bất kể có được truy cập hay không
+    }
+
+    // Phương thức để cập nhật người dùng với ghi xuyên qua
+    public void UpdateUser(User user)
+    {
+        // 1. Ghi vào cơ sở dữ liệu trước
+        _userRepository.Save(user);
+        Console.WriteLine($"Người dùng {user.Id} đã được lưu vào cơ sở dữ liệu.");
+
+        // 2. Sau đó, cập nhật/thêm vào cache (ghi xuyên qua)
+        _cache.Set(user.Id, user, _cacheEntryOptions);
+        Console.WriteLine($"Người dùng {user.Id} đã được cập nhật trong cache.");
+    }
+
+    // Phương thức để xóa người dùng với ghi xuyên qua
+    public void DeleteUser(string userId)
+    {
+        // 1. Xóa khỏi cơ sở dữ liệu trước
+        _userRepository.DeleteById(userId);
+        Console.WriteLine($"Người dùng {userId} đã được xóa khỏi cơ sở dữ liệu.");
+
+        // 2. Sau đó, xóa khỏi cache
+        _cache.Remove(userId);
+        Console.WriteLine($"Người dùng {userId} đã được xóa khỏi cache.");
+    }
+
+    // Ví dụ về thao tác đọc (tùy chọn, để minh họa)
+    public User GetUser(string userId)
+    {
+        // Tương tự như ví dụ trước, sử dụng GetOrCreate cho đọc xuyên qua (read-through)
+        return _cache.GetOrCreate(userId, entry =>
+        {
+            entry.SetOptions(_cacheEntryOptions);
+            Console.WriteLine($"Cache miss cho người dùng: {userId}. Đang tải từ repository để đọc...");
+            var user = _userRepository.FindById(userId);
+            if (user == null)
+            {
+                throw new InvalidOperationException($"Không tìm thấy người dùng với ID '{userId}'.");
+            }
+            return user;
+        });
     }
 }
 ```
@@ -689,67 +792,288 @@ theo lịch trình hoặc điều kiện nhất định.
 - Spring Cache với triển khai tùy chỉnh
 - Microsoft AppFabric Caching với write-behind strategy
 
-#strong[Mã ví dụ (Java với Hazelcast):]
+==== Sử dụng Hazelcast .NET Client cho Write-Behind
+<sử-dụng-hazelcast-net-client-cho-write-behind>
+Để sử dụng Hazelcast trong ASP.NET Core, bạn cần cài đặt gói NuGet
+`Hazelcast.Net`.
 
-```java
-@Configuration
-public class CacheConfig {
-    @Bean
-    public Config hazelcastConfig() {
-        Config config = new Config();
-        MapConfig mapConfig = new MapConfig("users");
-        
-        // Cấu hình write-behind
-        MapStoreConfig mapStoreConfig = new MapStoreConfig();
-        mapStoreConfig.setImplementation(new UserMapStore());
-        mapStoreConfig.setWriteDelaySeconds(5); // Hoãn ghi 5 giây
-        mapStoreConfig.setWriteBatchSize(100);  // Gom 100 thao tác ghi
-        mapStoreConfig.setWriteCoalescing(true); // Gộp các thao tác ghi trên cùng khóa
-        mapStoreConfig.setEnabled(true);
-        mapStoreConfig.setWriteBehindEnabled(true);
-        
-        mapConfig.setMapStoreConfig(mapStoreConfig);
-        config.addMapConfig(mapConfig);
-        
-        return config;
-    }
+```powershell
+dotnet add package Hazelcast.Net
+```
+
+===== `User` Entity (Thực thể Người dùng)
+<1-user-entity-thực-thể-người-dùng>
+Giả sử bạn có một lớp `User` tương tự:
+
+```cs
+public class User
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    // Thêm các thuộc tính khác nếu cần
+}
+```
+
+===== `IUserRepository` (Giao diện Repository Người dùng)
+<2-iuserrepository-giao-diện-repository-người-dùng>
+Đây là giao diện để tương tác với cơ sở dữ liệu của bạn.
+
+```cs
+public interface IUserRepository
+{
+    Task Save(User user); // Lưu hoặc cập nhật người dùng vào DB
+    // Có thể thêm các phương thức khác như FindById, DeleteById...
 }
 
-// MapStore implementation
-public class UserMapStore implements MapStore<String, User> {
-    private UserRepository userRepository;
-    
-    public UserMapStore() {
-        // Khởi tạo repository
-        this.userRepository = SpringContextHolder.getBean(UserRepository.class);
+public class UserRepository : IUserRepository
+{
+    public Task Save(User user)
+    {
+        Console.WriteLine($"[DB] Đang lưu/cập nhật người dùng {user.Id} vào cơ sở dữ liệu...");
+        // Thực hiện logic lưu vào cơ sở dữ liệu thực tế ở đây
+        // Ví dụ: sử dụng Entity Framework Core
+        return Task.CompletedTask;
     }
-    
-    @Override
-    public void store(String key, User value) {
-        // Được gọi khi write-behind được kích hoạt
-        userRepository.save(value);
-    }
-    
-    @Override
-    public void storeAll(Map<String, User> map) {
-        // Xử lý ghi batch
-        userRepository.saveAll(map.values());
-    }
-    
-    // Các phương thức khác của MapStore...
 }
+```
 
-// Sử dụng trong dịch vụ
-@Service
-public class UserService {
-    @Autowired
-    private HazelcastInstance hazelcastInstance;
-    
-    public void updateUser(User user) {
-        // Dữ liệu chỉ được ghi vào cache trước
-        IMap<String, User> userMap = hazelcastInstance.getMap("users");
-        userMap.put(user.getId(), user);
-        // Write-behind sẽ tự động ghi vào database sau
+===== `UserMapStore` (Tương đương MapStore)
+<3-usermapstore-tương-đương-mapstore>
+Trong Hazelcast .NET, bạn sẽ cần tạo một lớp triển khai
+`IMapStore<TKey, TValue>`. Lớp này sẽ xử lý việc đọc/ghi dữ liệu giữa
+cache Hazelcast và cơ sở dữ liệu của bạn.
+
+```cs
+using Hazelcast.Core;
+using Hazelcast.Map;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+public class UserMapStore : IMapStore<string, User>
+{
+    private readonly IUserRepository _userRepository;
+
+    // Sử dụng Dependency Injection để tiêm UserRepository
+    public UserMapStore(IUserRepository userRepository)
+    {
+        _userRepository = userRepository;
+    }
+
+    public Task DeleteAsync(string key)
+    {
+        // Triển khai logic xóa khỏi DB nếu cần (ví dụ: userRepository.DeleteById(key))
+        Console.WriteLine($"[MapStore] Yêu cầu xóa người dùng {key} từ MapStore (chưa triển khai).");
+        return Task.CompletedTask;
+    }
+
+    public Task<User> LoadAsync(string key)
+    {
+        // Triển khai logic tải từ DB khi cache miss (Read-Through)
+        Console.WriteLine($"[MapStore] Yêu cầu tải người dùng {key} từ MapStore (chưa triển khai).");
+        // return _userRepository.FindById(key);
+        return Task.FromResult<User>(null); // Trả về null nếu không tìm thấy
+    }
+
+    public Task<IDictionary<string, User>> LoadAllAsync(ISet<string> keys)
+    {
+        // Triển khai logic tải nhiều mục từ DB
+        Console.WriteLine($"[MapStore] Yêu cầu tải nhiều người dùng từ MapStore (chưa triển khai).");
+        return Task.FromResult<IDictionary<string, User>>(new Dictionary<string, User>());
+    }
+
+    public Task<ISet<string>> LoadAllKeysAsync()
+    {
+        // Triển khai logic tải tất cả các khóa từ DB
+        Console.WriteLine($"[MapStore] Yêu cầu tải tất cả khóa từ MapStore (chưa triển khai).");
+        return Task.FromResult<ISet<string>>(new HashSet<string>());
+    }
+
+    public Task StoreAsync(string key, User value)
+    {
+        // Đây là phương thức chính được gọi khi write-behind kích hoạt cho một mục
+        Console.WriteLine($"[MapStore] StoreAsync: Đang lưu người dùng {key} vào cơ sở dữ liệu thông qua MapStore...");
+        return _userRepository.Save(value);
+    }
+
+    public Task StoreAllAsync(IDictionary<string, User> entries)
+    {
+        // Đây là phương thức được gọi khi write-behind gom nhóm các thao tác ghi (batch write)
+        Console.WriteLine($"[MapStore] StoreAllAsync: Đang lưu {entries.Count} người dùng theo lô vào cơ sở dữ liệu thông qua MapStore...");
+        var tasks = new List<Task>();
+        foreach (var entry in entries.Values)
+        {
+            tasks.Add(_userRepository.Save(entry));
+        }
+        return Task.WhenAll(tasks); // Đảm bảo tất cả các thao tác lưu đều hoàn thành
+    }
+}
+```
+
+===== Cấu hình Hazelcast trong ASP.NET Core (`Program.cs` hoặc `Startup.cs`)
+<4-cấu-hình-hazelcast-trong-aspnet-core-programcs-hoặc-startupcs>
+Bạn sẽ cấu hình Hazelcast client và MapStore của nó trong phần khởi tạo
+ứng dụng.
+
+```cs
+// Program.cs (sử dụng Minimal APIs trong .NET 6+)
+
+using Hazelcast.Configuration;
+using Hazelcast.Core;
+using Hazelcast.Map;
+using Hazelcast; // Thêm dòng này để truy cập HazelcastClientFactory
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Đăng ký UserRepository
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
+// Đăng ký UserMapStore.
+// Lưu ý: UserMapStore cần IUserRepository, nên cần inject trong constructor.
+builder.Services.AddSingleton<UserMapStore>();
+
+// Cấu hình Hazelcast Client
+builder.Services.AddSingleton<IHazelcastClient>(sp =>
+{
+    var hazelcastOptions = new HazelcastOptionsBuilder()
+        .With(options =>
+        {
+            options.ClusterName = "dev"; // Thay thế bằng tên cluster của bạn
+            options.Networking.Addresses.Add("127.0.0.1:5701"); // Địa chỉ máy chủ Hazelcast
+            // Thêm các cấu hình mạng khác nếu cần
+        })
+        .Build();
+
+    // Cấu hình Map "users" với MapStoreConfig
+    var mapOptions = new MapOptions("users");
+    var mapStoreConfig = new MapStoreOptions
+    {
+        // Khuyến nghị sử dụng service provider để tạo MapStore
+        // để nó có thể nhận các dependencies của nó (như UserRepository)
+        ImplementationFactory = () => sp.GetRequiredService<UserMapStore>(),
+        Enabled = true,
+        WriteBehind = true,
+        WriteDelaySeconds = 5,       // Hoãn ghi 5 giây
+        WriteBatchSize = 100,        // Gom 100 thao tác ghi
+        WriteCoalescing = true       // Gộp các thao tác ghi trên cùng khóa (nếu có nhiều cập nhật cho cùng 1 khóa)
+    };
+    mapOptions.MapStore = mapStoreConfig;
+    hazelcastOptions.MapConfigs.AddOrReplace(mapOptions);
+
+    // Xây dựng và khởi tạo Hazelcast Client
+    var client = HazelcastClientFactory.StartNewClient(hazelcastOptions).Result; // .Result hoặc await
+    return client;
+});
+
+// Đăng ký UserService
+builder.Services.AddScoped<UserService>();
+
+var app = builder.Build();
+
+// Cấu hình HTTP request pipeline (ví dụ cho mục đích kiểm tra)
+app.MapPost("/users/update", async (User user, UserService userService) =>
+{
+    Console.WriteLine($"[API] Yêu cầu cập nhật người dùng: {user.Id}");
+    await userService.UpdateUser(user);
+    return Results.Ok($"Người dùng {user.Id} đã được cập nhật trong cache. Dữ liệu sẽ được ghi vào DB sau.");
+});
+
+app.Run();
+
+/*
+// Trong Startup.cs truyền thống (cho .NET 5 trở về trước)
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddSingleton<UserMapStore>(); // Đăng ký MapStore
+
+        services.AddSingleton<IHazelcastClient>(sp =>
+        {
+            var hazelcastOptions = new HazelcastOptionsBuilder()
+                .With(options =>
+                {
+                    options.ClusterName = "dev";
+                    options.Networking.Addresses.Add("127.0.0.1:5701");
+                })
+                .Build();
+
+            var mapOptions = new MapOptions("users");
+            var mapStoreConfig = new MapStoreOptions
+            {
+                ImplementationFactory = () => sp.GetRequiredService<UserMapStore>(),
+                Enabled = true,
+                WriteBehind = true,
+                WriteDelaySeconds = 5,
+                WriteBatchSize = 100,
+                WriteCoalescing = true
+            };
+            mapOptions.MapStore = mapStoreConfig;
+            hazelcastOptions.MapConfigs.AddOrReplace(mapOptions);
+
+            var client = HazelcastClientFactory.StartNewClient(hazelcastOptions).Result;
+            return client;
+        });
+
+        services.AddScoped<UserService>();
+        services.AddControllers();
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+    }
+}
+*/
+```
+
+===== `UserService` (Sử dụng trong Dịch vụ)
+<5-userservice-sử-dụng-trong-dịch-vụ>
+Trong `UserService` của bạn, bạn sẽ inject `IHazelcastClient` và sử dụng
+nó để lấy `IMap` và thực hiện các thao tác `put`.
+
+```cs
+using Hazelcast.Core; // Cần thiết để sử dụng IMap
+using System.Threading.Tasks;
+
+public class UserService
+{
+    private readonly IHazelcastClient _hazelcastClient;
+    private IMap<string, User> _userMap; // Sử dụng để lưu trữ IMap
+
+    public UserService(IHazelcastClient hazelcastClient)
+    {
+        _hazelcastClient = hazelcastClient;
+    }
+
+    // Phương thức này sẽ được gọi lần đầu tiên để lấy IMap
+    // hoặc bạn có thể làm cho nó bất đồng bộ và gọi trong constructor nếu muốn
+    private async Task<IMap<string, User>> GetUserMap()
+    {
+        if (_userMap == null)
+        {
+            _userMap = await _hazelcastClient.GetMapAsync<string, User>("users");
+        }
+        return _userMap;
+    }
+
+    public async Task UpdateUser(User user)
+    {
+        // Lấy IMap "users"
+        IMap<string, User> userMap = await GetUserMap();
+
+        // Dữ liệu chỉ được ghi vào cache Hazelcast trước
+        await userMap.PutAsync(user.Id, user);
+        Console.WriteLine($"Người dùng {user.Id} đã được cập nhật trong cache Hazelcast.");
+        // Write-behind sẽ tự động ghi vào database sau theo cấu hình MapStore
     }
 }
 ```

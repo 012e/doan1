@@ -100,3 +100,4 @@
 #include "consensus.typ"
 #include "deployment.typ"
 #include "dotnet.typ"
+#include "best-practices.typ"
