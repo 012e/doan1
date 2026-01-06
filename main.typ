@@ -36,7 +36,7 @@
         #image("images/logo-uit.svg", width: 200pt)
       ]
       #align(horizon + center)[
-        #text(size: 26pt)[*Đồ án 1*] \
+        #text(size: 26pt)[*Đồ án 2*] \
         #v(3pt)
         #text(size: 30pt)[*Tìm hiểu về .NET Core 8*] \
         #v(20pt)

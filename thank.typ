@@ -1,3 +1,5 @@
+#align(top)[
+
 #align(center, text(
   size: 20pt,
   weight: "bold",
@@ -7,7 +9,7 @@ block[
 
 Em xin gửi lời cảm ơn chân thành và sâu sắc nhất đến thầy Nguyễn Công Hoan –
 người đã tận tình hướng dẫn, chỉ bảo và đồng hành cùng em trong suốt quá trình
-thực hiện môn học Đồ án 1.
+thực hiện môn học Đồ án 2.
 
 Sự hỗ trợ nhiệt tình, những lời khuyên quý báu và kinh nghiệm chuyên môn của thầy
 đã giúp em không chỉ hoàn thành đồ án một cách tốt nhất mà còn tích lũy thêm
@@ -21,3 +23,20 @@ cải thiện đồ án mà còn truyền cảm hứng và động lực để e
 những chặng đường học tập và công việc sau này.
 
 *Một lần nữa, em xin gửi đến thầy lời tri ân sâu sắc!*
+]
+#align(bottom + right, block[
+#set align(center)
+
+#text(size: 13pt, style: "italic")[
+  #text[TP. Hồ Chí Minh], ngày
+  #datetime.today().display("[day]/[month]/[year]")
+]
+#linebreak()
+#text(size: 12pt)[Sinh viên thực hiện]
+
+#v(60pt)
+
+#align(center)[
+Phạm Nhật Huy
+]
+])
