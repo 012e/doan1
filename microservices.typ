@@ -11,7 +11,7 @@ riêng biệt và giao tiếp thông qua các cơ chế nhẹ, thường là API
 HTTP. Các dịch vụ này được xây dựng xung quanh các khả năng kinh doanh
 và có thể được triển khai độc lập bởi các nhóm nhỏ, tự quản lý.
 
-#figure(image("images/2025-03-07-22-01-46.png"), caption: [Hello captions])
+#figure(image("images/2025-03-07-22-01-46.png"), caption: [So sánh kiến trúc Microservices và Monolithic])
 
 === Sự phát triển của microservices
 <sự-phát-triển-của-microservices>
@@ -147,7 +147,7 @@ sử dụng để #strong[cải thiện hiệu suất, tăng khả năng mở r�
 độ tin cậy] trong các hệ thống phân tán.
 
 
-#figure(image("images/2025-03-07-22-03-13.png"), caption: [Hello captions])
+#figure(image("images/2025-03-07-22-03-13.png"), caption: [Demo áp dụng Message Queuing])
 
 - Sử dụng hàng đợi tin nhắn như RabbitMQ, ActiveMQ
 - Tin nhắn được lưu trữ tạm thời cho đến khi được xử lý
@@ -166,7 +166,7 @@ hợp. Các thông điệp được gửi #strong[một lần] và có thể đ�
 #strong[tách biệt] giữa bên phát và bên nhận, #strong[tăng khả năng mở
 rộng] và #strong[giảm phụ thuộc trực tiếp] giữa các thành phần.
 
-#figure(image("images/2025-03-07-22-04-19.png"), caption: [Hello captions])
+#figure(image("images/2025-03-07-22-04-19.png"), caption: [Minh họa Publish/Subscribe])
 
 - Một nhà sản xuất gửi tin nhắn đến nhiều người tiêu dùng
 - Thường sử dụng các nền tảng như Kafka, Google Pub/Sub

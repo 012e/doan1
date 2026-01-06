@@ -13,7 +13,7 @@ Client truy vấn một service registry, nhận thông tin về các instance
 đang chạy, sau đó sử dụng thuật toán cân bằng tải để chọn ra instance
 phù hợp.
 
-#figure(image("images/2025-03-07-22-07-26.png"), caption: [Hello captions])
+#figure(image("images/2025-03-07-22-07-26.png"), caption: [Client-side Discovery])
 
 #strong[Ưu điểm:]
 
@@ -35,7 +35,7 @@ Trong mô hình này, client gửi yêu cầu đến một thành phần trung g
 (load balancer hoặc router), thành phần này sẽ tìm kiếm service registry
 và chuyển tiếp yêu cầu đến instance thích hợp.
 
-#figure(image("images/2025-03-07-22-08-02.png"), caption: [Hello captions])
+#figure(image("images/2025-03-07-22-08-02.png"), caption: [Server-side Discovery])
 
 #strong[Ưu điểm:]
 
@@ -60,7 +60,7 @@ Trong mô hình này, mỗi service instance tự chịu trách nhiệm đăng k
 thông tin của mình vào service registry khi khởi động và hủy đăng ký khi
 tắt.
 
-#figure(image("images/2025-03-07-22-08-19.png"), caption: [Hello captions])
+#figure(image("images/2025-03-07-22-08-19.png"), caption: [Kiểu đăng ký registry: Self-registration])
 
 - #strong[Ưu điểm:]
   - Kiến trúc phi tập trung
@@ -79,7 +79,7 @@ Trong mô hình này, một thành phần riêng biệt gọi là service regist
 theo dõi các service instance và cập nhật thông tin vào service
 registry.
 
-#figure(image("images/2025-03-07-22-08-27.png"), caption: [Hello captions])
+#figure(image("images/2025-03-07-22-08-27.png"), caption: [Kiểu đăng ký registry: Third-party Registration])
 
 #strong[Ưu điểm:]
 
