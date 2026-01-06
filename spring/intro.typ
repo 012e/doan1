@@ -1,26 +1,29 @@
 == Giới thiệu chương
 <giới-thiệu-chương>
-Chương này trình bày hướng dẫn chi tiết để xây dựng hệ thống với Spring
-Boot. Nội dung bao gồm khái niệm, các starter phổ biến, tích hợp với thư
-viện (MyBatis-Plus), cache, message broker (RabbitMQ), tìm kiếm
-(Elasticsearch), containerization (Docker), logging & observability
-(ELK), quản trị ứng dụng (Spring Boot Admin), cấu hình phân tán
-(Apollo), bảo mật (Spring Security, OAuth2, JWT), giám sát (Actuator +
-Prometheus), giao dịch phân tán (Seata), validation (JSR-303), discovery
-(Eureka), cũng như các mô-đun liên quan đến microservices: Ribbon,
-Feign, Hystrix, Turbine, Dashboard.
+Chương này cung cấp hướng dẫn toàn diện và chi tiết để xây dựng hệ thống enterprise với Spring Boot, từ các ứng dụng đơn khối (monolithic) đến kiến trúc vi dịch vụ (microservices).
 
-Tài liệu được viết nhằm mục đích:
+Chúng ta sẽ không chỉ dừng lại ở lý thuyết mà đi sâu vào cấu hình thực tế, best practices và các mẫu thiết kế (design patterns) chuẩn công nghiệp.
 
-- Cung cấp hướng dẫn thực tế, có ví dụ cấu hình.
-- Phù hợp cho người phát triển backend, kiến trúc sư hệ thống hoặc sinh
-  viên nắm bắt mẫu thiết kế microservices với Spring Boot.
-- Có thể dùng làm tài liệu nội bộ hoặc làm tài liệu học tập.
+#strong[Nội dung chính bao gồm:]
+- #strong[Core Foundation]: Khám phá cơ chế Starter, Auto-configuration.
+- #strong[Data Access & Caching]: Tối ưu thao tác dữ liệu với MyBatis-Plus và chiến lược Caching với Redis.
+- #strong[Messaging & Search]: Xử lý bất đồng bộ với RabbitMQ và tìm kiếm Full-text với Elasticsearch.
+- #strong[Security]: Bảo mật hiện đại với OAuth2 Resource Server và JWT.
+- #strong[Microservices Ecosystem]:
+  - Service Discovery (Eureka)
+  - Load Balancing (Spring Cloud LoadBalancer)
+  - Resiliency (Resilience4j)
+  - API Gateway (Spring Cloud Gateway)
+  - Distributed Transaction (Seata)
+  - Configuration Management (Apollo)
+- #strong[Observability & Operations]: Giám sát hệ thống với Actuator, Prometheus, Grafana và ELK Stack. Docker hóa ứng dụng để triển khai dễ dàng.
 
-#strong[Phạm vi và giả định]
+#strong[Đối tượng mục tiêu:]
+- Backend Developer muốn nâng cao kỹ năng Spring Boot.
+- Software Architect cần tham khảo các giải pháp tích hợp hệ thống.
+- Sinh viên cần tài liệu thực hành chuyên sâu.
 
-- Giả định người đọc đã có kiến thức cơ bản về Java và Maven/Gradle.
-- Sử dụng Spring Boot 2.x hoặc 3.x (nếu có khác biệt, sẽ ghi chú rõ
-  ràng).
-- Các ví dụ tập trung vào tính thực tiễn: cấu hình `application.yml`,
-  Dockerfile, và các đoạn code minh họa.
+#strong[Phạm vi & Giả định:]
+- Người đọc đã có kiến thức nền tảng về Java và Build tool (Maven/Gradle).
+- Các ví dụ dựa trên Spring Boot 3.x và Java 17+ (phiên bản LTS mới nhất).
+- Tập trung vào cấu hình `application.yml` và các đoạn code "production-ready".
