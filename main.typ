@@ -101,17 +101,6 @@
 
 #pagebreak()
 
-// #show outline.entry.where(level: 1): it => {
-//   set text(size: 14pt, weight: "bold")
-//   set block(above: 1em)
-//   [#text(size: 14pt)[
-//     #link(it.element.location())[#it.prefix() #it.inner()]]
-//   ]
-// }
-
-
-
-
 #set page(numbering: "1")
 
 #show heading.where(level: 1): it => {
@@ -131,4 +120,11 @@
 #include "deployment.typ"
 #include "dotnet.typ"
 #include "best-practices.typ"
-#include "taloi.typ"
+
+#pagebreak()
+#align(center)[
+    #text(20pt, weight: "bold")[TÀI LIỆU THAM KHẢO]
+    #v(20pt)
+]
+#bibliography("references.bib", title: none, full: true)
+
