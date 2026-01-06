@@ -28,7 +28,7 @@ dữ liệu mà còn trên nhiều cơ sở dữ liệu, dịch vụ hoặc hệ
 nhau. Điều này làm phức tạp việc duy trì thuộc tính ACID và đòi hỏi các
 giao thức đặc biệt để đảm bảo tính nhất quán.
 
-Distributed transactions (giao dịch phân tán) có thêm một số thách thức:
+Distributed transactions (giao dịch phân tán) có thêm một số thách thức @kleppmann2017designing:
 
 + #strong[Độ trễ mạng];: Việc truyền thông giữa các nút trong hệ thống
   phân tán gây ra độ trễ, làm giảm hiệu suất.
@@ -247,7 +247,7 @@ khác cũng đã sẵn sàng commit.
 
 == Saga
 <saga>
-Saga là một mô hình quản lý giao dịch phân tán được thiết kế để duy trì
+Saga @garcia1987sagas là một mô hình quản lý giao dịch phân tán được thiết kế để duy trì
 tính nhất quán trong các ứng dụng có quy mô lớn, đặc biệt là trong kiến
 trúc microservices. Khác với 2PC và 3PC, Saga không cố gắng đảm bảo tính
 ACID nghiêm ngặt, mà tập trung vào tính nhất quán cuối cùng (eventual

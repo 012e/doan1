@@ -1,9 +1,7 @@
-#align(center, text(
-  size: 20pt,
-  weight: "bold",
-block[
-  MỞ ĐẦU
-]))
+#align(center)[
+    #text(15pt, weight: "bold", heading(level: 1, numbering: none)[MỞ ĐẦU])
+    #v(20pt)
+]
 
 Trong bối cảnh phát triển công nghệ thông tin hiện nay, các nền tảng
 phát triển phần mềm đang không ngừng được cải tiến để đáp ứng nhu cầu

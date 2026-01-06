@@ -42,7 +42,7 @@ với các trường hợp sử dụng khác nhau.
 === Khái quát về Raft
 <khái-quát-về-raft>
 Raft là một thuật toán đồng thuận được đề xuất bởi Diego Ongaro và John
-Ousterhout vào năm 2014 với mục tiêu tạo ra một giải pháp dễ hiểu hơn so
+Ousterhout vào năm 2014 @ongaro2014search với mục tiêu tạo ra một giải pháp dễ hiểu hơn so
 với Paxos. Tên \"Raft\" là từ viết tắt của \"Reliable, Replicated,
 Redundant, And Fault-Tolerant\" (Đáng tin cậy, Nhân bản, Dự phòng và
 Chịu lỗi).

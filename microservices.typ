@@ -20,7 +20,7 @@ trúc nguyên khối truyền thống. Khái niệm này bắt đầu phổ bi�
 năm 2010-2012, với những doanh nghiệp lớn như Netflix, Amazon và eBay
 dẫn đầu trong việc áp dụng phương pháp này. Martin Fowler và James Lewis
 đã chính thức hóa khái niệm này trong bài báo nổi tiếng của họ vào năm
-2014, giúp phổ biến phương pháp này rộng rãi hơn trong cộng đồng phát
+2014 @fowler2014microservices, giúp phổ biến phương pháp này rộng rãi hơn trong cộng đồng phát
 triển phần mềm.
 
 === Đặc điểm chính của microservices
@@ -74,7 +74,7 @@ triển phần mềm.
 + #strong[Nguyên tắc trách nhiệm đơn lẻ];: Mỗi dịch vụ chỉ nên tập trung
   vào một chức năng nghiệp vụ cụ thể.
 + #strong[Nguyên tắc ranh giới miền];: Dựa trên Domain-Driven Design
-  (DDD) để xác định ranh giới của từng dịch vụ.
+  (DDD) @evans2004domain để xác định ranh giới của từng dịch vụ.
 + #strong[Thiết kế API đầu tiên];: Phát triển API trước khi triển khai
   dịch vụ.
 + #strong[Dữ liệu riêng tư];: Mỗi dịch vụ quản lý dữ liệu riêng và không

@@ -1,6 +1,6 @@
 == Giới thiệu chương
 <giới-thiệu-chương>
-Chương này cung cấp hướng dẫn toàn diện và chi tiết để xây dựng hệ thống enterprise với Spring Boot, từ các ứng dụng đơn khối (monolithic) đến kiến trúc vi dịch vụ (microservices).
+Chương này cung cấp hướng dẫn toàn diện và chi tiết để xây dựng hệ thống enterprise với Spring Boot @walls2015spring, từ các ứng dụng đơn khối (monolithic) đến kiến trúc vi dịch vụ (microservices).
 
 Chúng ta sẽ không chỉ dừng lại ở lý thuyết mà đi sâu vào cấu hình thực tế, best practices và các mẫu thiết kế (design patterns) chuẩn công nghiệp.
 
