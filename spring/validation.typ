@@ -17,20 +17,6 @@ Từ Spring Boot 2.3 trở đi, `spring-boot-starter-validation` không còn n�
 </dependency>
 ```
 
-=== Các Annotation Cơ bản thường dùng
-<validation-annotations>
-| Annotation | Mô tả | Loại dữ liệu |
-| :--- | :--- | :--- |
-| `@NotNull` | Không được null, nhưng có thể rỗng (""). | Mọi loại |
-| `@NotEmpty` | Không null, độ dài > 0 (cho Collection/Map/Array/String). | String, Collection... |
-| `@NotBlank` | Không null, và phải có ít nhất 1 ký tự không phải khoảng trắng (trim().length > 0). | String |
-| `@Min` / `@Max` | Giá trị số phải nằm trong khoảng. | Number |
-| `@Size` | Độ dài phải nằm trong khoảng (min, max). | String, Collection, Array |
-| `@Email` | Phải đúng định dạng email. | String |
-| `@Pattern` | Kiểm tra theo Regex (Biểu thức chính quy). | String |
-| `@Past` / `@Future` | Ngày tháng phải trong quá khứ/tương lai. | Date, LocalDate... |
-| `@AssertTrue`/`False`| Field phải là true/false. | Boolean |
-
 === Sử dụng trong Controller
 <validation-controller>
 

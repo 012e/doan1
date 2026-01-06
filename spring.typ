@@ -1,6 +1,5 @@
 = Xây dựng hệ thống với Spring Boot
 <xây-dựng-hệ-thống-với-spring-boot>
-#include "spring/intro.typ"
 #include "spring/starter.typ"
 #include "spring/mybatis.typ"
 #include "spring/cache.typ"
@@ -15,4 +14,3 @@
 #include "spring/seata.typ"
 #include "spring/validation.typ"
 #include "spring/microservices.typ"
-#include "spring/conclusion.typ"

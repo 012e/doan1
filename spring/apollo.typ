@@ -88,15 +88,3 @@ private void onChange(ConfigChangeEvent changeEvent) {
     // Logic: Reset lại kết nối DB, xóa cache...
 }
 ```
-
-=== So sánh Apollo vs Spring Cloud Config
-<comparison-apollo-scc>
-| Tiêu chí | Apollo | Spring Cloud Config (SCC) |
-| :--- | :--- | :--- |
-| #strong[Giao diện] | Có Portal quản trị mạnh mẽ | Không (hoặc rất cơ bản) |
-| #strong[Storage] | MySQL | Git (SVN) |
-| #strong[Refresh] | Real-time Push (HTTP Long Polling) | Cần gọi `/actuator/refresh` hoặc dùng Spring Cloud Bus |
-| #strong[Phân quyền] | Có (User/Team) | Dựa vào Git permission |
-| #strong[Độ phức tạp] | Cao (Cần dựng Database, Service) | Thấp (Chỉ cần 1 App Server) |
-
--> #strong[Kết luận]: Dùng #strong[SCC] cho dự án nhỏ/vừa, dùng #strong[Apollo] (hoặc Nacos) cho hệ thống lớn, enterprise.

@@ -1,6 +1,9 @@
 #set text(font: "Times New Roman", size: 13pt)
 #set heading(numbering: "1.")
-#set page("a4")
+#set page(
+  paper: "a4",
+  margin: (top: 3cm, bottom: 3.5cm, left: 3.5cm, right: 2cm),
+)
 #import "@preview/codly:1.3.0": *
 #import "@preview/codly-languages:0.1.1": *
 
@@ -142,7 +145,6 @@
 
 #pagebreak()
 
-#set page(numbering: "1")
 
 #show heading.where(level: 1): it => {
   let prefix = [Chương ];
@@ -151,6 +153,7 @@
   }
   return prefix + [#counter(heading).at(here()).at(0). ] + it.body
 }
+
 
 #include "problem-statement.typ"
 #pagebreak()

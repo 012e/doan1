@@ -14,52 +14,6 @@ Spring Boot Actuator là một module cung cấp các tính năng "production-re
 </dependency>
 ```
 
-=== Các Endpoint quan trọng
-<các-endpoint-quan-trọng>
-Mặc định, chỉ có `/health` và `/info` là được bật qua HTTP. Dưới đây là các endpoint hữu ích thường dùng:
-
-- #strong[`/actuator/health`]: Trạng thái sức khỏe của ứng dụng (UP, DOWN, OUT_OF_SERVICE). Nó tự động kiểm tra kết nối DB, RabbitMQ, Redis nếu có các thư viện tương ứng.
-- #strong[`/actuator/info`]: Hiển thị thông tin tùy ý về ứng dụng (phiên bản, git commit, build time...).
-- #strong[`/actuator/metrics`]: Hiển thị các metrics chi tiết (CPU, RAM, JVM, HTTP request stats).
-- #strong[`/actuator/loggers`]: Xem và thay đổi dynamic log level (ví dụ: chuyển từ INFO sang DEBUG mà không cần restart).
-- #strong[`/actuator/env`]: Xem các biến môi trường và properties cấu hình (cần cẩn thận vì có thể lộ secret).
-- #strong[`/actuator/threaddump`]: Dump thread hiện tại, hữu ích để debug vấn đề deadlock hoặc performance.
-- #strong[`/actuator/heapdump`]: Tải về file HPROF dump heap memory để phân tích memory leak.
-- #strong[`/actuator/mappings`]: Liệt kê tất cả các request mapping (URL) đã đăng ký.
-
-Để bật tất cả các endpoint (chỉ nên dùng cho môi trường dev hoặc được bảo mật kỹ):
-
-```yaml
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*" # Hoặc liệt kê cụ thể: "health,info,metrics,prometheus"
-```
-
-=== Bảo mật Actuator Endpoint
-<bảo-mật-actuator>
-Vì Actuator lộ ra nhiều thông tin nhạy cảm, việc bảo mật là bắt buộc. Thường sử dụng Spring Security để yêu cầu quyền Admin mới truy cập được.
-
-```java
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.requestMatcher(EndpointRequest.toAnyEndpoint())
-        .authorizeRequests((requests) -> requests.anyRequest().hasRole("ADMIN"));
-    // ... cấu hình khác
-    return http.build();
-}
-```
-
-Ngoài ra, có thể đổi port hoặc context path cho management endpoint để tách biệt với business API:
-
-```yaml
-management:
-  server:
-    port: 8081 # Chạy actuator trên port riêng
-    base-path: /manage
-```
-
 === Tích hợp Prometheus và Grafana
 <tích-hợp-prometheus>
 Prometheus là hệ thống monitoring theo cơ chế *pull* (kéo dữ liệu), và Grafana dùng để *visualize* (hiển thị) dữ liệu đó. Spring Boot sử dụng Micrometer làm facade để xuất metrics.
