@@ -40,7 +40,7 @@ việc lớn, phục vụ số lượng người dùng đông đảo và cung c�
 năng phức tạp. Các hệ thống này cần phải có khả năng mở rộng, độ tin cậy
 cao và khả năng phục hồi tốt.
 
-#image("images/2025-03-07-23-07-43.png")
+#figure(image("images/2025-03-07-23-07-43.png"), caption: [Hello captions])
 
 ==== Mô hình kiến trúc phổ biến
 <mô-hình-kiến-trúc-phổ-biến-1>
@@ -116,7 +116,7 @@ Scalability (tính mở rộng)  là khả năng của một hệ thống, mạn
 
 ===== Horizontal scaling 
 Horizontal scaling (mở rộng theo chiều ngang) liên quan đến việc thêm nhiều máy chủ hoặc nút vào hệ thống hiện có. Đây là phương pháp phổ biến trong môi trường đám mây.
-#image("images/2025-03-07-00-25-03.png")
+#figure(image("images/2025-03-07-00-25-03.png"), caption: [Hello captions])
 - Ưu điểm:
   - Có thể mở rộng gần như vô hạn bằng cách thêm nhiều máy chủ
   - Tăng cường khả năng chịu lỗi và tính sẵn sàng
@@ -129,7 +129,7 @@ Horizontal scaling (mở rộng theo chiều ngang) liên quan đến việc th�
 
 ===== Vertical scaling 
 Vertical scaling (mở rộng theo chiều dọc) liên quan đến việc nâng cấp phần cứng của máy chủ hiện có, như thêm CPU, RAM, hoặc ổ cứng.
-#image("images/2025-03-07-00-53-57.png")
+#figure(image("images/2025-03-07-00-53-57.png"), caption: [Hello captions])
 
 - Ưu điểm
   - Đơn giản về mặt triển khai, không cần thay đổi nhiều về kiến trúc phần mềm

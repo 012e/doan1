@@ -11,7 +11,7 @@ tài nguyên];, #strong[giảm chi phí hạ tầng] và #strong[tăng hiệu qu
 dụng máy chủ];. Tuy nhiên, nó cũng đòi hỏi #strong[quản lý tài nguyên
 chặt chẽ] để tránh xung đột và quá tải hệ thống.
 
-#image("images/2025-03-07-22-24-02.png")
+#figure(image("images/2025-03-07-22-24-02.png"), caption: [Hello captions])
 
 - #strong[Ưu điểm];:
   - Tối ưu hóa việc sử dụng tài nguyên phần cứng
@@ -61,7 +61,7 @@ máy tính cá nhân đến máy chủ và đám mây. Docker giúp #strong[tố
 việc triển khai, tăng tính di động, giảm xung đột môi trường và cải
 thiện hiệu suất] trong việc phát triển và vận hành phần mềm.
 
-#image("images/2025-03-07-22-22-49.png")
+#figure(image("images/2025-03-07-22-22-49.png"), caption: [Hello captions])
 
 - #strong[Thành phần chính];:
   - #strong[Docker Engine];: Runtime để tạo và quản lý container
@@ -136,7 +136,7 @@ scaling linh hoạt] và #strong[quản lý cấu hình];. Kubernetes cho phép
 môi trường #strong[cloud-native];.
 
 #align(center)[
-  #image("images/2025-03-07-22-29-48.png", width: 5cm)
+  #figure(image("images/2025-03-07-22-29-48.png", width: 5cm), caption: [Hello captions])
 ]
 
 - #strong[Kiến trúc];:
@@ -184,7 +184,7 @@ trình triển khai ứng dụng phức tạp, hỗ trợ #strong[rollbacks,
 versioning] và quản lý #strong[dependencies] trong Kubernetes.
 
 #align(center)[
-  #image("images/2025-03-07-22-27-44.png", width: 5cm)
+  #figure(image("images/2025-03-07-22-27-44.png", width: 5cm), caption: [Hello captions])
 ]
 
 - #strong[Thành phần chính];:
@@ -351,7 +351,7 @@ Consul có thể chạy trên nhiều môi trường, từ #strong[on-premises] 
 #strong[cloud];, giúp các dịch vụ giao tiếp an toàn và hiệu quả.
 
 #align(center)[
-  #image("images/2025-03-07-22-32-03.png", width: 5cm)
+  #figure(image("images/2025-03-07-22-32-03.png", width: 5cm), caption: [Hello captions])
 ]
 
 - #strong[Tính năng chính];:
@@ -416,7 +416,7 @@ Consul có thể chạy trên nhiều môi trường, từ #strong[on-premises] 
 - #strong[Tổng quan];: Nền tảng phân tích và trực quan hóa dữ liệu mã
   nguồn mở, đặc biệt mạnh mẽ với dữ liệu time-series.
 
-#image("images/2025-03-07-22-37-24.png")
+#figure(image("images/2025-03-07-22-37-24.png"), caption: [Hello captions])
 
 - #strong[Tính năng chính];:
   - #strong[Dashboards];: Giao diện trực quan với nhiều loại biểu đồ
@@ -583,7 +583,7 @@ Consul có thể chạy trên nhiều môi trường, từ #strong[on-premises] 
 ELK Stack là một bộ công cụ mã nguồn mở gồm ba thành phần chính: Elasticsearch, Logstash và Kibana,
 được sử dụng để thu thập, xử lý, lưu trữ và phân tích dữ liệu log theo thời gian thực. 
 
-#image("images/2025-03-07-22-36-34.png")
+#figure(image("images/2025-03-07-22-36-34.png"), caption: [Hello captions])
 
 - #strong[Thành phần];:
   - #strong[Elasticsearch];: Công cụ tìm kiếm và phân tích phân tán
@@ -699,7 +699,7 @@ nhiều nền tảng, tích hợp với các hệ thống giám sát như
 việc theo dõi ứng dụng hiện đại.
 
 
-#image("images/2025-03-07-22-34-57.png")
+#figure(image("images/2025-03-07-22-34-57.png"), caption: [Hello captions])
 
 #strong[Thành phần chính:]
 
@@ -737,7 +737,7 @@ việc theo dõi ứng dụng hiện đại.
 Jaeger là hệ thống tracing phân tán mã nguồn mở, được tạo ra bởi Uber và
 hiện là dự án tốt nghiệp của Cloud Native Computing Foundation (CNCF).
 
-#image("images/2025-03-07-22-35-28.png")
+#figure(image("images/2025-03-07-22-35-28.png"), caption: [Hello captions])
 
 #strong[Kiến trúc:]
 

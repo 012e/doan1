@@ -6,7 +6,10 @@
 
 #show: codly-init.with()
 #codly(languages: codly-languages, zebra-fill: none, stroke: black + 1pt)
-#show raw: set text(font: "JetBrains Mono", size: 10pt) 
+#set text(lang: "vi")
+#set par(justify: true)
+
+#show raw: set text(font: "IosevkaNerdFont", size: 10pt) 
 
 #set table(
   fill: (x, y) =>
@@ -60,26 +63,54 @@
 
 
 #pagebreak()
-#show outline.entry.where(level: 1): it => {
-  set text(size: 14pt, weight: "bold")
-  set block(above: 1em)
-  [#text(size: 14pt)[
-    #link(it.element.location())[Chương #it.prefix() #it.inner()]]
-  ]
-}
 
 
 #include "thank.typ"
+
 #pagebreak()
 
-#outline(
-  title: [
-    #text([Mục lục], size: 30pt)
-    #v(10pt)
-  ],
-  depth: 4
-)
+#[
+  #align(center)[
+      #text(20pt, weight: "bold")[MỤC LỤC]
+      #v(20pt)
+  ]
+  #show outline.entry.where(level: 1): it => {
+    set text(size: 14pt, weight: "bold")
+    set block(above: 1em)
+    [#text(size: 14pt)[
+      #link(it.element.location())[Chương #it.prefix() #it.inner()]]
+    ]
+  }
+
+  #outline(
+    title: [],
+    indent: 1.5em,
+  )
+]
+
 #pagebreak()
+
+#align(center)[
+    #text(20pt, weight: "bold")[PHỤ LỤC HÌNH ẢNH]
+    #v(20pt)
+]
+#outline(
+  title: [],
+  target: figure.where(kind: image),
+)
+
+#pagebreak()
+
+// #show outline.entry.where(level: 1): it => {
+//   set text(size: 14pt, weight: "bold")
+//   set block(above: 1em)
+//   [#text(size: 14pt)[
+//     #link(it.element.location())[#it.prefix() #it.inner()]]
+//   ]
+// }
+
+
+
 
 #set page(numbering: "1")
 
@@ -92,7 +123,6 @@
 
 #include "introduction.typ"
 #include "load-balancer.typ"
-#include "load-balancer.typ"
 #include "caching.typ"
 #include "microservices.typ"
 #include "service-discovery.typ"
@@ -101,3 +131,4 @@
 #include "deployment.typ"
 #include "dotnet.typ"
 #include "best-practices.typ"
+#include "taloi.typ"

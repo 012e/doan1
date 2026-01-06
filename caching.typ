@@ -9,7 +9,7 @@ tìm thấy dữ liệu (cache hit), nó được trả về ngay lập tức; n
 (cache miss), hệ thống sẽ truy xuất dữ liệu từ nguồn chính, lưu vào
 cache và trả về cho người dùng.
 
-#image("images/2025-03-07-09-15-22.png")
+#figure(image("images/2025-03-07-09-15-22.png"), caption: [Hello captions])
 
 Caching đóng vai trò then chốt trong việc cải thiện hiệu suất hệ thống
 thông qua các cơ chế sau:
@@ -45,7 +45,7 @@ Tuy nhiên, caching cũng mang đến những thách thức:
 Local cache lưu trữ dữ liệu trực tiếp trong bộ nhớ của ứng dụng, thường
 trong cùng không gian địa chỉ với mã thực thi.
 
-#image("images/2025-03-07-09-17-04.png")
+#figure(image("images/2025-03-07-09-17-04.png"), caption: [Hello captions])
 
 #strong[Đặc điểm:]
 
@@ -82,7 +82,7 @@ Distributed cache là một hệ thống cache được chia sẻ giữa nhiều
 hoặc instance ứng dụng, thường được triển khai dưới dạng dịch vụ riêng
 biệt.
 
-#image("images/2025-03-07-09-18-38.png")
+#figure(image("images/2025-03-07-09-18-38.png"), caption: [Hello captions])
 
 #strong[Đặc điểm:]
 
@@ -125,7 +125,7 @@ Reverse proxy cache hoạt động như một trung gian giữa client và máy 
 ứng dụng, lưu cache và phục vụ nội dung tĩnh hoặc động thay mặt cho máy
 chủ nguồn.
 
-#image("images/2025-03-07-09-21-38.png")
+#figure(image("images/2025-03-07-09-21-38.png"), caption: [Hello captions])
 
 #strong[Đặc điểm:]
 
@@ -169,7 +169,7 @@ Sidecar cache là một container hoặc process cache riêng biệt chạy cùn
 với container/process ứng dụng chính trong kiến trúc microservices, tạo
 thành một đơn vị triển khai duy nhất.
 
-#image("images/2025-03-07-09-23-09.png")
+#figure(image("images/2025-03-07-09-23-09.png"), caption: [Hello captions])
 
 #strong[Đặc điểm:]
 
@@ -384,7 +384,7 @@ cache hiệu quả.
 Cache-aside (hay còn gọi là Lazy Loading) là một pattern trong đó ứng
 dụng chịu trách nhiệm tương tác với cả cache và nguồn dữ liệu.
 
-#image("images/2025-03-07-21-59-03.png")
+#figure(image("images/2025-03-07-21-59-03.png"), caption: [Hello captions])
 
 #strong[Cách hoạt động:]
 
@@ -454,7 +454,7 @@ def get_user(user_id):
 Read-through là một pattern caching trong đó thư viện hoặc dịch vụ cache
 chịu trách nhiệm tải dữ liệu từ nguồn dữ liệu khi có cache miss.
 
-#image("images/2025-03-07-21-59-38.png")
+#figure(image("images/2025-03-07-21-59-38.png"), caption: [Hello captions])
 
 #strong[Cách hoạt động:]
 
@@ -581,7 +581,7 @@ public class UserService
 Write-through là một pattern caching trong đó mọi thao tác ghi dữ liệu
 được thực hiện đồng thời vào cache và hệ thống lưu trữ chính.
 
-#image("images/2025-03-07-21-59-53.png")
+#figure(image("images/2025-03-07-21-59-53.png"), caption: [Hello captions])
 
 #strong[Cách hoạt động:]
 
@@ -741,7 +741,7 @@ Write-back là một pattern caching trong đó thao tác ghi chỉ được th�
 hiện vào cache trước, sau đó mới được ghi vào hệ thống lưu trữ chính
 theo lịch trình hoặc điều kiện nhất định.
 
-#image("images/2025-03-07-22-00-39.png")
+#figure(image("images/2025-03-07-22-00-39.png"), caption: [Hello captions])
 
 #strong[Cách hoạt động:]
 

@@ -461,7 +461,7 @@ Martin (Uncle Bob). Mục tiêu chính là tạo ra các hệ thống:
   hưởng logic nghiệp vụ
 - #strong[Độc lập với bất kỳ thành phần bên ngoài nào]
 
-#image("images/2025-03-07-22-38-13.png")
+#figure(image("images/2025-03-07-22-38-13.png"), caption: [Hello captions])
 
 Clean Architecture trong .NET Core thường được tổ chức thành các lớp
 đồng tâm:
@@ -656,7 +656,7 @@ Nguyên tắc cơ bản:
 - #strong[Tách biệt mối quan tâm kỹ thuật trong phạm vi slice];: Mỗi
   slice chịu trách nhiệm về mọi khía cạnh của tính năng
 
-#image("images/2025-03-07-22-38-38.png")
+#figure(image("images/2025-03-07-22-38-38.png"), caption: [Hello captions])
 
 Trong .NET Core, VSA thường được triển khai bằng cách sử dụng thư viện
 MediatR và CQRS (Command Query Responsibility Segregation):
