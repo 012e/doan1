@@ -74,7 +74,7 @@
       #align(horizon + center)[
         #text(size: 26pt)[*Đồ án 2*] \
         #v(3pt)
-        #text(size: 30pt)[*Tìm hiểu về .NET Core 8*] \
+        #box(width: 70%,text(size: 25pt)[*Thực hành cài đặt Search Engine với OpenSearch*]) \
         #v(20pt)
 
         #text[Giảng viên hướng dẫn] \
@@ -174,7 +174,5 @@
 #include "deployment.typ"
 #pagebreak()
 #include "dotnet.typ"
-#pagebreak()
-#include "best-practices.typ"
 #pagebreak()
 #include "references.typ"
